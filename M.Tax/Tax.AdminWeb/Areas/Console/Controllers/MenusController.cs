@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Tax.AdminWeb.Filters;
+using Tax.Common;
+using Tax.Common.Extention;
 
 namespace Tax.AdminWeb.Areas.Console.Controllers
 {
@@ -11,6 +13,11 @@ namespace Tax.AdminWeb.Areas.Console.Controllers
     {
         public IActionResult Index()
         {
+            var token= BaseCore.CurrentContext.GetCookie();
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                ViewBag.UserName = token.Split('|')[0];
+            }
             return View();
         }
 

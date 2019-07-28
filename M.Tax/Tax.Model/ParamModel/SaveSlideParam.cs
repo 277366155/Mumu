@@ -14,13 +14,14 @@ namespace Tax.Model.ParamModel
         /// 上传文件的标题
         /// </summary>
         [Required(ErrorMessage = "名称不能为空")]
-        [StringLength(32)]
+        [StringLength(32, ErrorMessage = "名称长度不能超过32个字")]
         public string Title { get; set; }
 
         /// <summary>
         /// 序号
         /// </summary>
-        [Required(ErrorMessage = "序号不能为空")]
+        [Required(ErrorMessage = "显示序号不能为空")]
+        [Range(maximum:999, minimum:0,ErrorMessage ="排列序号范围为0~999")]
         public int SortID { get; set; }
 
         /// <summary>

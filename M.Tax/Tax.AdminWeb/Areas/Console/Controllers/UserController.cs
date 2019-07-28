@@ -32,12 +32,12 @@ namespace Tax.AdminWeb.Areas.Console.Controllers
         public async Task<ActionResult<BaseResult>> Login([FromForm]LoginParam loginParam)
         {
             var result = await _userSer.LoginCheck(loginParam);
-            if (result.IsSuccessed)
-            {
+            //if (result.IsSuccessed)
+            //{
 
-                return Redirect("/home");
-            }
-            return Redirect("/?msg=" + HttpUtility.UrlEncode(result.Msg));
+            //    return Redirect("/home");
+            //}
+            return Json(result);
         }
     }
 }

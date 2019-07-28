@@ -29,14 +29,14 @@ namespace Tax.Service
         /// <returns></returns>
         public async Task<BaseResult> SaveSlideAsync(SaveSlideParam param)
         {
-            var exsit = await _staticFilesRep.Count($" and id ={param.Id}") > 0;
-            if (!exsit)
+            var model = await _staticFilesRep.GetModel(param.Id);//.Count($" and id ={param.Id}") > 0;
+            if (model==null)
             {
                 return await SaveUploadFileAsync(param);
             }
             else
             {
-                return await UpdateSlideAsync(param);
+                return await UpdateSlideAsync(param,model);
             }
         }
 
@@ -45,12 +45,13 @@ namespace Tax.Service
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public async Task<BaseResult> UpdateSlideAsync(SaveSlideParam param)
+        public async Task<BaseResult> UpdateSlideAsync(SaveSlideParam param,StaticFiles model)
         {
-            var fileName = param.SavePath.Substring(param.SavePath.LastIndexOf('/'));
+            var fileName = param.SavePath.Substring(param.SavePath.LastIndexOf('/')+1);
             var data = await _staticFilesRep.GetModel(param.Id);
             //文件不存在则是新上传的
-            if (!File.Exists(Directory.GetCurrentDirectory() + $"/{BaseCore.Configuration["ImgPath:savePath"]}/"+fileName))
+            //if (!File.Exists(Directory.GetCurrentDirectory() + $"/{BaseCore.Configuration["ImgPath:savePath"]}/"+fileName))
+            if(model.SavePath!=fileName)
             {
                 MoveFile(fileName);
                 //同时删除原图片。。

@@ -17,8 +17,13 @@
         $(function () {
             $("#LoginForm").submit(function () {
                 $("#LoginForm").ajaxSubmit(function (data) {
-                    if (data != undefined && data.IsSuccessed != undefined &&!data.IsSuccessed) {
-                        layer.alert(data.msg);                       
+                    if (data != undefined && data.isSuccessed != undefined) {
+                        if (!data.isSuccessed) {
+                            layer.alert(data.msg);
+                        }
+                        else {
+                            layer.alert(data.msg, function () { location.href = "/home"; });
+                        }
                     }
                 });
                  return false;
@@ -55,12 +60,12 @@
                         <div class="card-body py-1">
                             <div class="form-group">
                                 <label class="form-control-label">账号</label>
-                                <input type="text" class="form-control" name="UserName">
+                                <input type="text" class="form-control" name="UserName"  maxlength="32">
                             </div>
 
                             <div class="form-group">
                                 <label class="form-control-label">密码</label>
-                                <input type="password" class="form-control" name="Password">
+                                <input type="password" class="form-control" name="Password" maxlength="32">
                             </div>
 
                             @*<div class="custom-control custom-checkbox mt-4">
