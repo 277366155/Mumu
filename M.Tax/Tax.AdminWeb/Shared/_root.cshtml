@@ -1,0 +1,26 @@
+﻿
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title> @ViewData["Title"]</title>
+    <link rel="stylesheet" href="/vendor/simple-line-icons/css/simple-line-icons.css">
+    <link rel="stylesheet" href="/vendor/font-awesome/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link href="/vendor/layui/css/layui.css" rel="stylesheet" />
+    @RenderSection("Style", false)
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/popper.js/popper.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/vendor/layui/lay/modules/layer.js"></script>
+    <script src="/vendor/layui/layui.js"></script>
+    <script src="/vendor/jquery/vue.min.js"></script>
+</head>
+<body>
+    @RenderBody()
+
+    @RenderSection("Script", false)
+</body>
+</html>

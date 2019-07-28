@@ -1,0 +1,271 @@
+﻿
+@{
+    ViewData["Title"] = "幻灯片管理";
+    Layout = "~/Shared/_root.cshtml";
+}
+
+<div class="card">
+    <div class="card-header bg-light">
+        <h4>幻灯片管理   </h4>
+    </div>
+
+    <div class="card-body">
+
+        <p class="btn btn-rounded btn-success " data-toggle="modal" onclick="show('新增');">+ 新增</p>
+
+        <div class="table-responsive">
+            <table class="table table-striped" id="tbList">
+                <thead>
+                    <tr>
+                        <th width="10%">编号</th>
+                        <th width="20%">名称</th>
+                        <th width="20%">图片</th>
+                        <th width="10%">显示排序</th>
+                        <th width="20%">创建时间</th>
+                        <th width="20%">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in items">
+                        <td>编号为{{item.id}}</td>
+                        <td class="text-nowrap">{{item.title}}</td>
+                        <td>
+                            <div v-bind:id="item.id">
+                                <img v-bind:src="item.path" style="max-width:100px;max-height:50px;cursor:pointer" onclick="ViewImg(this)" />
+                            </div>
+                        </td>
+                        <td>{{item.sortID}}</td>
+                        <td>{{item.bizCreateTime}}</td>
+                        <td>
+                            <button class="btn btn-rounded btn-info" v-on:click="Edit(item)">编辑</button>
+                            <button class="btn btn-rounded btn-danger" v-on:click="Delete(item.id)">删除</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="notice_pages"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title"> </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body" style="min-height:300px">
+                <div class="card-body" style=" align-content:center">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <label for="normal-input" class="form-control-label">名称</label>
+                                <input type="text" id="inputName" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <label for="normal-input" class="form-control-label">显示排序<span style="color:orangered">（数字越小越靠前）</span></label>
+                                <input type="number" id="inputSortId" class="form-control" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <label for="normal-input" class="form-control-label">选择图片</label>
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <form enctype="multipart/form-data" id="formFile" method="post">
+                                                <input class="btn btn-outline-success" id="fileInput" type="file" name="imgUrl">
+                                            </form>
+                                        </td>
+                                        <td style="vertical-align:top;"><button class="btn btn-rounded btn-success" id="btnFileUpload">上 传</button></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="view">
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <center>
+                                    <img height="200" id="showImg" style="display:none; max-width:350px" />
+                                </center>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="btnSave">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="hidFileName" />
+<input type="hidden" id="hidId" />
+
+
+@section Script{
+    <script type="text/javascript">
+
+        var tbList = new Vue({
+            el: '#tbList',
+            data: {
+                listParam: {
+                    pageIndex: 1,
+                    pageSize: 20
+                },
+                items: [],
+                createTime: "",
+                id: 0,
+            },
+            created: function () {
+                this.GetList();
+            },
+            methods: {
+                //绑定事件
+                Search: function () {
+                    this.listParam.pageIndex = 1;
+                    this.GetList();
+                },
+                Edit: function (obj) {
+                    ClearModal();
+                    $("#title").text("编辑");
+                    this.id = obj.id;
+                    this.createTime = obj.createTime;
+                    $("#hidFileName").val(obj.path);
+                    $("#inputName").val(obj.title);
+                    $("#inputSortId").val(obj.sortID);
+                    $("#showImg").attr("src", obj.path);
+                    $("#showImg").show();
+                    $("#modal-2").modal('show');
+                },
+                GetList: function () {
+                    var that = this;
+                    $.post('/console/slide/GetSlidesPager',
+                        {
+                            pageIndex: that.listParam.pageIndex,
+                            pageSize: that.listParam.pageSize,
+                        },
+                        function (data) {
+                            that.items = data.dataList;
+                            layui.use('laypage', function () {
+                                var laypage = layui.laypage;
+
+                                //执行一个laypage实例
+                                laypage.render({
+                                    elem: 'notice_pages'
+                                    , count: data.total
+                                    , limit: data.pageSize
+                                    , curr: data.pageIndex || 1
+                                    , jump: function (obj, first) {
+                                        that.listParam.pageIndex = obj.curr;
+                                        if (!first) {
+                                            that.GetList();
+                                        }
+                                    }
+                                });
+                            });
+
+                        });
+                },
+                Delete: function (id) {
+                          var that = this;
+                    layer.confirm('是否删除id为' + id + '的图片？',
+                        {
+                            btn: ['确定', '取消'],
+                            btn1: function () {                          
+                                $.post('/console/slide/DeleteSlide',
+                                    {
+                                        id: id,
+                                    },
+                                    function (data) {
+                                        if (data.isSuccessed) {
+                                            that.listParam.pageIndex = 1;
+                                            that.GetList();
+                                        }
+                                        layer.alert(data.msg);
+                                    });
+                            }
+                        });
+                }
+            },
+            mounted: function () {
+
+            }
+        });
+
+        $(function () {
+            $("#btnFileUpload").click(function () {
+                $.ajax({
+                    async: false,
+                    url: '/Console/Slide/UploadFileAsync',
+                    type: 'POST',
+                    cache: false,
+                    data: new FormData($('#formFile')[0]),
+                    processData: false,
+                    contentType: false
+                }).done(function (data) {
+                    if (data.isSuccessed) {
+                        $("#hidFileName").val(data.data);
+                        $("#showImg").attr("src", data.data);
+                        $("#showImg").show();
+                        return true;
+                    }
+                    else {
+                        layer.alert(data.msg);
+                        return false;
+                    }
+                });
+            });
+            $("#btnSave").click(function () {
+                $.post("/Console/Slide/SaveSlideAsync",
+                    {
+                        id: tbList.id,
+                        createTime: tbList.createTime,
+                        title: $("#inputName").val(),
+                        sortID: $("#inputSortId").val(),
+                        savePath: $("#hidFileName").val()
+                    },
+                    function (data) {
+                        //  console.log(data);
+                        if (data.isSuccessed) {
+                            $("#modal-2").modal('hide');
+                            tbList.GetList();
+                        }
+                        layer.alert(data.msg);
+                    });
+            });
+        });
+        function show(title) {
+            ClearModal();
+            $("#title").text(title);
+            $("#modal-2").modal('show');
+        }
+        //清空模态框信息
+        function ClearModal() {
+            $("#hidId").val("");
+            $("#hidFileName").val("");
+            $("#fileInput").val("");
+            $("#inputName").val("");
+            $("#inputSortId").val(0);
+            $("#showImg").hide();
+        }
+        function ViewImg(e) {
+            layer.photos({ photos: "#" + $(e).parent().attr("id"), anim: 5 });
+        }
+
+    </script>
+}
+
+

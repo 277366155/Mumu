@@ -1,0 +1,148 @@
+﻿@{
+    ViewData["Title"] = "后台管理系统";
+    Layout = "~/Shared/_root.cshtml";
+}
+@section style
+{
+    @*@RenderSection("Style", false)*@
+}
+
+    <body class="sidebar-fixed header-fixed">
+
+        <div class="page-wrapper">
+            <nav class="navbar page-header">
+                <a href="#" class="btn btn-link sidebar-mobile-toggle d-md-none mr-auto">
+                    <i class="fa fa-bars"></i>
+                </a>
+
+                @*<a class="navbar-brand" href="#">
+                    <img src="/imgs/logo.png" alt="logo">
+                </a>*@
+
+                <a href="#" class="btn btn-link sidebar-toggle d-md-down-none">
+                    <i class="fa fa-bars"> 菜单</i>
+                </a>
+
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @*<img src="./imgs/avatar-1.png" class="avatar avatar-sm" alt="logo">*@
+                            <span class=" ml-1 d-md-down-none">用户名</span>
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+                            @*<div class="dropdown-header">Account</div>*@
+                            <a href="#" class="dropdown-item">
+                                <i class="fa fa-user"></i> 修改密码
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fa fa-lock"></i> 退出登录
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="main-container">
+                <div class="sidebar">
+                    <nav class="sidebar-nav" id="menu">
+                        <ul class="nav">
+                            <li class="nav-title">控制台系统</li>
+
+                            <li class="nav-item">
+                                <a href="/console/menus/statistics" class="nav-link active" name="home" target="content">
+                                    <i class="fa fa-home"></i> 点击量总览
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/console/slide" class="nav-link" name="slide" target="content">
+                                    <i class="icon icon-picture"></i> 幻灯片管理
+                                </a>
+                            </li>
+
+                            <li class="nav-item nav-dropdown">
+                                <a href="#" class="nav-link nav-dropdown-toggle">
+                                    <i class="fa fa-desktop"></i> PC端管理 <i class="fa fa-caret-left"></i>
+                                </a>
+
+                                <ul class="nav-dropdown-items">
+                                    <li class="nav-item">
+                                        <a href="layouts-normal.html" class="nav-link" name="welcomeimg" target="content">
+                                            <i class="icon icon-picture"></i> 首页欢迎图片管理
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="layouts-normal.html" class="nav-link" name="backimg" target="content">
+                                            <i class="icon icon-picture"></i> 菜单背景管理
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="layouts-normal.html" class="nav-link" name="pcmenu" target="content">
+                                            <i class="icon icon-list"></i> 菜单管理
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li class="nav-item nav-dropdown">
+                                <a href="#" class="nav-link nav-dropdown-toggle">
+                                    <i class="fa fa-tablet"></i> 平板端管理 <i class="fa fa-caret-left"></i>
+                                </a>
+                                <ul class="nav-dropdown-items">
+                                    <li class="nav-item">
+                                        <a href="/console/slide" class="nav-link" name="form" target="content">
+                                            <i class="fa fa-file"></i> 表单证书管理
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="alerts.html" class="nav-link" name="padmenu" target="content">
+                                            <i class="icon icon-list"></i> 菜单管理
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item nav-dropdown">
+                                <a href="#" class="nav-link nav-dropdown-toggle">
+                                    <i class="fa fa-cogs"></i> 系统设置 <i class="fa fa-caret-left"></i>
+                                </a>
+                                <ul class="nav-dropdown-items">
+                                    <li class="nav-item">
+                                        <a href="register.html" class="nav-link" name="sys" target="content">
+                                            <i class="fa fa-cog"></i> 系统参数设置
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="blank.html" class="nav-link" name="user" target="content">
+                                            <i class="fa fa-users"></i> 用户管理
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="http://www.baidu.com" class="nav-link" name="pwd" target="content">
+                                            <i class="fa fa-key"></i> 修改密码
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <div class="content">
+                    @RenderBody()
+                </div>
+            </div>
+
+        </div>
+        @section Script{
+            <script src="/js/carbon.js"></script>
+            <script type="text/javascript">
+                $(function () {
+                    //setMenu();
+                    $("#menu a").click(function () {
+                        $("#menu a").removeClass("active");
+                        $(this).addClass("active");
+                    });
+                });
+            </script>
+        }
+    </body>

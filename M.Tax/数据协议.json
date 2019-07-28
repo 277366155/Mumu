@@ -1,0 +1,189 @@
+
+//pc端获取菜单信息：
+{
+	"menus": [{
+			"id": 120,
+			"path": "/files/img/1.jpg",
+			"showName": "信息查询",
+			"menuUrl": "http://shuiwuju.com/search",
+			"sortId": 4,
+			"version": 152345343,
+			"children": []
+		},
+		{
+			"id": 120,
+			"path": "/files/img/1.jpg",
+			"showName": "自然人",
+			"menuUrl": null,
+			"sortId": 2,
+			"version": 152345343,
+			"children": [{
+				"id": 121,
+				"path": "/files/img/1.jpg",
+				"showName": "代开发票",
+				"menuUrl": "http://shuiwuju.com/search",
+				"sortId": 1,
+				"version": "1523453343",
+				"children": []
+			}, {
+				"id": 122,
+				"path": "/files/img/1.jpg",
+				"showName": "个税抵扣",
+				"menuUrl": "http://shuiwuju.com/search",
+				"sortId": 2,
+				"version": "1523452343",
+				"children": []
+			}]
+		}
+	],
+	//幻灯片设置
+	"slides": {
+		"idleTime": 50,//闲置时间，单位秒
+		"showTime": 5.5,//幻灯片显示时间，单位秒
+		"paths": ["/files/img/1.jpg", "/files/img/2.jpg", "/files/img/3.jpg"]
+	},
+	//欢迎图片
+	"welcome": {
+		"showTime": 2.5,//显示时长，单位秒
+		"path": "/files/img/1.jpg"
+	}
+}
+
+//平板端获取菜单信息
+{
+	"forms": {
+		"id": 1,
+		"path": ["/files/img/formico.jpg"],
+		"showName": "表单证书",
+		"sortId": 1,
+		"version": "1523453423",
+		"children": [{
+				"id": 11,
+				"path": [],
+				"showName": "税务登记",
+				"sortId": 11,
+				"version": "1523453423",
+				"children": [{
+						"id": 111,
+						"path": [],
+						"showName": "增值税类",
+						"sortId": 111,
+						"version": "1523453423",
+						"children": [{
+								"id": 1111,
+								"path": ["/files/img/3.jpg", "/files/img/4.jpg"],
+								"showName": "增值税类表格2",
+								"sortId": 11,
+								"version": "1523453423",
+								"children": []
+							},
+							{
+								"id": 1112,
+								"path": ["/files/img/1.jpg", "/files/img/2.jpg"],
+								"showName": "增值税类表格1",
+								"sortId": 10,
+								"version": "1523453423",
+								"children": []
+							}
+						]
+					},
+					{
+						"id": 112,
+						"path": [],
+						"showName": "消费税类",
+						"sortId": 111,
+						"version": "1523453423",
+						"children": [{
+								"id": 1111,
+								"path": ["/files/img/3.jpg", "/files/img/4.jpg"],
+								"showName": "消费税类表格2",
+								"sortId": 11,
+								"version": "1523453423",
+								"children": []
+							},
+							{
+								"id": 1112,
+								"path": ["/files/img/1.jpg", "/files/img/2.jpg"],
+								"showName": "消费税类表格2",
+								"sortId": 10,
+								"version": "1523453423",
+								"children": []
+							}
+						]
+					}
+				]
+			},
+			{
+				"id": 11,
+				"path": [],
+				"showName": "税收优惠",
+				"sortId": 11,
+				"version": "1523453423",
+				"children": [{
+						"id": 111,
+						"path": [],
+						"showName": "增值税类优惠",
+						"sortId": 111,
+						"version": "1523453423",
+						"children": [{
+								"id": 1111,
+								"path": ["/files/img/3.jpg", "/files/img/4.jpg"],
+								"showName": "增值税类优惠表格2",
+								"sortId": 11,
+								"version": "1523453423",
+								"children": []
+							},
+							{
+								"id": 1112,
+								"path": ["/files/img/1.jpg", "/files/img/2.jpg"],
+								"showName": "增值税类优惠表格1",
+								"sortId": 10,
+								"version": "1523453423",
+								"children": []
+							}
+						]
+					},
+					{
+						"id": 112,
+						"path": [],
+						"showName": "消费税类优惠",
+						"sortId": 111,
+						"version": "1523453423",
+						"children": [{
+								"id": 1111,
+								"path": ["/files/img/3.jpg", "/files/img/4.jpg"],
+								"showName": "消费税类优惠表格2",
+								"sortId": 11,
+								"version": "1523453423",
+								"children": []
+							},
+							{
+								"id": 1112,
+								"path": ["/files/img/1.jpg", "/files/img/2.jpg"],
+								"showName": "消费税类优惠表格1",
+								"sortId": 10,
+								"version": "1523453423",
+								"children": []
+							}
+						]
+					}
+				]
+			}
+		]
+	},
+	"menus": {
+		"id": 120,
+		"path": "/files/img/1.jpg",
+		"showName": "网上办税",
+		"menuUrl": "http://shuiwuju.com/search",
+		"sortId": 2,
+		"version": 152345343,
+		"children": []
+	},
+	//幻灯片设置
+	"slides": {
+		"idleTime": 50,//闲置时间，单位秒
+		"showTime": 5.5,//幻灯片显示时间，单位秒
+		"paths": ["/files/img/1.jpg", "/files/img/2.jpg", "/files/img/3.jpg"]
+	}
+}
