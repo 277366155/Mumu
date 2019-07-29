@@ -49,6 +49,15 @@ namespace Tax.Common
             }
         }
 
+        /// <summary>
+        /// 删除缓存
+        /// </summary>
+        /// <param name="key"></param>
+        public static void DeleteData(string key)
+        {
+            Cache.Remove(key);
+        }
+
 
     }
 }

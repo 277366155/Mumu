@@ -22,7 +22,8 @@
                             layer.alert(data.msg);
                         }
                         else {
-                            layer.alert(data.msg, function () { location.href = "/home"; });
+                            location.href = "/home";
+                            //layer.alert(data.msg, function () { location.href = "/home"; });
                         }
                     }
                 });

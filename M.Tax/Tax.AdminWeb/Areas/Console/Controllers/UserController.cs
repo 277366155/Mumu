@@ -2,6 +2,7 @@
 using System.Web;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+using Tax.AdminWeb.Filters;
 using Tax.Common;
 using Tax.Model;
 using Tax.Model.ParamModel;
@@ -25,6 +26,11 @@ namespace Tax.AdminWeb.Areas.Console.Controllers
         }
         public IActionResult Index()
         {
+            var userInfo=UsersService.GetUserInfoSession(BaseCore.CurrentContext);
+            if(userInfo!=null)
+            {
+                return Redirect("/home");
+            }
             return View();
         }
 
@@ -32,12 +38,14 @@ namespace Tax.AdminWeb.Areas.Console.Controllers
         public async Task<ActionResult<BaseResult>> Login([FromForm]LoginParam loginParam)
         {
             var result = await _userSer.LoginCheck(loginParam);
-            //if (result.IsSuccessed)
-            //{
-
-            //    return Redirect("/home");
-            //}
             return Json(result);
+        }
+
+        [IdentityCheck]
+        [HttpPost]
+        public ActionResult<BaseResult> Logout()
+        {
+          return Json(_userSer.Logout());
         }
     }
 }

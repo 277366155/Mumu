@@ -29,9 +29,7 @@ namespace Tax.Service
             var data = await _usersRep.FirstOrDefault(" and UserName=@UserName and Password=@Password", param);
             if (data !=null)
             {
-                var expirationTime = DateTime.Now.AddHours(1);
-                var tokenVaule = $"{param.UserName}|{expirationTime.Ticks}";
-               BaseCore.CurrentContext.SetCookie(tokenVaule);
+               BaseCore.CurrentContext.SetCookie(param.UserName);
                 SetUserInfoSession(param.UserName, data);
                 return new Success("登陆成功");
             }
@@ -41,10 +39,18 @@ namespace Tax.Service
             }
         }
 
+        public BaseResult Logout()
+        {
+            var userName=BaseCore.CurrentContext.GetCookie();
+            BaseCore.CurrentContext.DeleteCookie();
+            DeleteUserInfoSession(userName);
+
+            return new Success();
+        }
         public async Task<bool> InserUser(InsertUserParam param)
         {
             param.Password = DEncrypt.Encrypt(param.Password);
-            return _usersRep.InsertUser(param).Result > 0;
+            return (await _usersRep.InsertUser(param)) > 0;
         }
 
         /// <summary>
@@ -58,19 +64,23 @@ namespace Tax.Service
             {
                 return null;
             }
-            var userName = token.Split('|')[0];
-            var ticks = token.Split('|')[1];
-            if (DateTime.Now.Ticks > Convert.ToInt64(ticks))
+            var user= CacheTools.GetData<Users>(token);
+            if (user != null)
             {
-                context.DeleteCookie();
-                return null;
+                //失效时间顺延
+                SetUserInfoSession(token, user);
             }
-            return CacheTools.GetData<Users>(userName );
+            return user;
         }
 
         public static void SetUserInfoSession(string userName, Users  userInfo)
         {           
             CacheTools.SetData(userName, userInfo);
+        }
+
+        public static void DeleteUserInfoSession(string userName)
+        {
+            CacheTools.DeleteData(userName);
         }
     }
 }
