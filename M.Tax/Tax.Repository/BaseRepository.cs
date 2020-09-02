@@ -15,15 +15,25 @@ namespace Tax.Repository
     {
         static string _conStr;
         static object lockObj = new object();
-
+        IDbConnection conn;
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        protected static IDbConnection CreateMysqlConnection()
+        protected  IDbConnection CreateMysqlConnection()
         {
-           var conn= new MySqlConnection(_conStr);
-            conn.Open();
+            if (conn == null)
+            {
+                lock (lockObj)
+                {
+                    if (conn == null)
+                    {
+                        conn = new MySqlConnection(_conStr);
+                    }
+                }
+            }
+            if(conn.State!= ConnectionState.Open)
+                conn.Open();
             return conn;
         }
 

@@ -16,14 +16,9 @@ namespace Tax.AdminWeb.Areas.Console.Controllers
         readonly UsersService _userSer;
         public UserController(UsersService userSer)
         {
-            EnableCookie();
             _userSer = userSer;
         }
-        private void EnableCookie()
-        {
-            var consentFeature = HttpContext.Features.Get<ITrackingConsentFeature>();
-            consentFeature.GrantConsent();
-        }
+       
         public IActionResult Index()
         {
             var userInfo=UsersService.GetUserInfoSession(HttpContext);
