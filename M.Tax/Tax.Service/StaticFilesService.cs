@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -120,13 +121,13 @@ namespace Tax.Service
             }
         }
 
-        public async Task<Result<string>> UploadFileAsync()
+        public async Task<Result<string>> UploadFileAsync(HttpContext httpContext)
         {
             var result = new Result<string>() { IsSuccessed = false, Data = "", Msg = "上传失败" };
             string fullName = "";
             string dirTempPath = Directory.GetCurrentDirectory() + $"/{BaseCore.Configuration["ImgPath:tempPath"]}/";
             long maxLength = 1024 * 1024 * 30;//最大30m
-            var files = BaseCore.CurrentContext.Request.Form.Files;
+            var files = httpContext.Request.Form.Files;
             if (files.Count <= 0)
             {
                 result.Msg = "请选择上传文件";

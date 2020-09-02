@@ -37,7 +37,7 @@ namespace Tax.Common.Extention
             }
             httpContext.Response.Cookies.Append(CookieKey, DEncrypt.Encrypt(cookieValue), new CookieOptions()
             {
-                Expires = DateTime.Now.AddHours(1),
+                Expires = DateTime.Now.AddDays(30),
                 HttpOnly = true,
                 Secure = false
             });

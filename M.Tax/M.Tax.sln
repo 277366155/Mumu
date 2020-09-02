@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tax.Repository", "Tax.Repos
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tax.Service", "Tax.Service\Tax.Service.csproj", "{26F44736-B13E-4DCC-88DB-B9BD8D1AAB0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tax.XUnitTest", "Tax.XUnitTest\Tax.XUnitTest.csproj", "{918C41F8-600E-4EEC-B7E9-BF49C43888E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tax.XUnitTest", "Tax.XUnitTest\Tax.XUnitTest.csproj", "{918C41F8-600E-4EEC-B7E9-BF49C43888E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

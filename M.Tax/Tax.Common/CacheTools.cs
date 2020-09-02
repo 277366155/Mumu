@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
+using System;
 
 namespace Tax.Common
 {
@@ -24,7 +24,6 @@ namespace Tax.Common
 
             return data;
         }
-
 
         /// <summary>
         ///在内存缓存中 保存缓存数据
@@ -57,7 +56,5 @@ namespace Tax.Common
         {
             Cache.Remove(key);
         }
-
-
     }
 }

@@ -51,14 +51,11 @@ namespace Tax.AdminWeb
             services.AddSingleton<StaticFilesRepository>();
             services.AddSingleton<UsersService>();
             services.AddSingleton<StaticFilesService>();
-
-            BaseCore.ServiceProvider = services.BuildServiceProvider();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IHttpContextAccessor accessor)
         {
-            BaseCore.CurrentAccessor = accessor;
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -21,12 +21,12 @@ namespace Tax.AdminWeb.Areas.Console.Controllers
         }
         private void EnableCookie()
         {
-            var consentFeature = BaseCore.CurrentContext.Features.Get<ITrackingConsentFeature>();
+            var consentFeature = HttpContext.Features.Get<ITrackingConsentFeature>();
             consentFeature.GrantConsent();
         }
         public IActionResult Index()
         {
-            var userInfo=UsersService.GetUserInfoSession(BaseCore.CurrentContext);
+            var userInfo=UsersService.GetUserInfoSession(HttpContext);
             if(userInfo!=null)
             {
                 return Redirect("/home");
@@ -37,7 +37,7 @@ namespace Tax.AdminWeb.Areas.Console.Controllers
         [HttpPost]
         public async Task<ActionResult<BaseResult>> Login([FromForm]LoginParam loginParam)
         {
-            var result = await _userSer.LoginCheck(loginParam);
+            var result = await _userSer.LoginCheck(loginParam,HttpContext);
             return Json(result);
         }
 
@@ -45,7 +45,7 @@ namespace Tax.AdminWeb.Areas.Console.Controllers
         [HttpPost]
         public ActionResult<BaseResult> Logout()
         {
-          return Json(_userSer.Logout());
+          return Json(_userSer.Logout(HttpContext));
         }
     }
 }

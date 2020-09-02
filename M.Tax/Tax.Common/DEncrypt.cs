@@ -19,7 +19,6 @@ namespace Tax.Common
         {
         }
 
-
         #region 使用 给定密钥字符串 加密/解密string
         /// <summary>
         /// 使用给定密钥字符串加密string
@@ -47,7 +46,6 @@ namespace Tax.Common
                 return "";
             }
         }
-
 
         /// <summary>
         /// 使用给定密钥字符串解密string
@@ -160,9 +158,6 @@ namespace Tax.Common
         }
 
         #endregion
-
-
-
 
     }
 }
