@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using Tax.Common;
+using Tax.Common.Logs;
 using Tax.Model.DBModel;
 using Tax.Repository;
 using Xunit;
@@ -21,12 +22,19 @@ namespace Tax.XUnitTest
         public void InsertTest()
         {
             var userRep = new UsersRepository(new RepositoryOption(ConnStr));
-          var result=  userRep.Insert(new Users() {  UserName="boo", Password="123", CreateTime= DateTime.Now}).Result;
+            var result = userRep.Insert(new Users() { UserName = "boo", Password = "123", CreateTime = DateTime.Now }).Result;
             OutPut.WriteLine($"data:{result}"); ;
             Assert.Equal(1, result);
 
-           //var data = userRep.GetModel("3").Result;
-           // Assert.Equal(data.UserName,"boo");
+            //var data = userRep.GetModel("3").Result;
+            // Assert.Equal(data.UserName,"boo");
+        }
+
+        [Fact]
+        public void GrayLogTest()
+        {
+            GrayLogHelper.Log("test log","fact graylog test message . ");
+            Assert.True(true);
         }
     }
 }
