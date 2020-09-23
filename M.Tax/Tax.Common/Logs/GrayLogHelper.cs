@@ -15,7 +15,9 @@ namespace Tax.Common.Logs
         static string app = BaseCore.AppSetting["appName"];
         public static void Log(string shortMsg,string msg)
         {
-            IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(Host), Port);
+            IPHostEntry hostInfo = Dns.GetHostEntry(Host);
+            IPAddress[] ipAddresses = hostInfo.AddressList;
+            IPEndPoint ipep = new IPEndPoint(ipAddresses[0], Port);
             Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
             var model = new GrayLogModel(shortMsg, msg);
