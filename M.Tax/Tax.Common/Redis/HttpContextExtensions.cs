@@ -72,7 +72,7 @@ namespace SissCloud.Caching.Redis
             var sessionId = context.Request.Cookies[_sessionIdCookieName];
             if (!string.IsNullOrWhiteSpace(sessionId))
             {
-                RedisHelper.CacheAccount.Set(GetSessionRedisKey(sessionId, key), value, _sessionTimeOut * 60);
+                RedisHelper.CacheAccount.Set(GetSessionRedisKey(sessionId, key), value.ToJson(), _sessionTimeOut * 60);
             }
             else
             {
@@ -103,7 +103,7 @@ namespace SissCloud.Caching.Redis
             {
                 return default(T);
             }
-            return RedisHelper.CacheAccount.Get<T>(GetSessionRedisKey(sessionId, key));
+            return RedisHelper.CacheAccount.Get(GetSessionRedisKey(sessionId, key)).ToObj<T>();
         }
 
         /// <summary>

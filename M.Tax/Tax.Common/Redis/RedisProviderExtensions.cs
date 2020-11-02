@@ -1,79 +1,322 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using StackExchange.Redis;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
+using Tax.Common;
+using Tax.Common.Extention;
 
 namespace SissCloud.Caching.Redis
 {
-    public static class RedisProviderExtensions
+    public static class RedisProviderExtension
     {
+        public const int Expires = 3600;//默认缓存时长1h
         /// <summary>
-        ///尝试从redis中取数据，如果不存在，则通过取func值，并缓存至redis
+        /// 拼接Key前缀
+        /// </summary>
+        private static readonly string _cacheKeyPrefix = BaseCore.Configuration.GetValue<string>("WebsiteCacheKeyPrefix");
+
+        public static bool Set(this RedisProvider rp, string key, string value, int expires = Expires)
+        {
+            return rp.DefaultDB.StringSet(key, value, TimeSpan.FromSeconds(expires));
+        }
+        public static string Get(this RedisProvider rp, string key)
+        {
+            return rp.DefaultDB.StringGet(key);
+        }
+
+        #region BulkRemove
+        /// <summary>
+        /// 批量删除
+        /// </summary>
+        /// <param name="key">通配key值，如【userId_*】->匹配以【userId_】开头的所有key</param>
+        /// <param name="pageSize">页码数</param>
+        public static long BulkRemove(this RedisProvider rp, string key, int pageSize = 5000)
+        {
+            var keys =rp.Conn.GetServer(rp.Conn.GetEndPoints()[0]).Keys(database: rp.DefaultDB.Database, pattern: key, pageSize: pageSize);
+            return rp.DefaultDB.KeyDelete(keys.ToArray());
+        }
+
+        #endregion
+
+        #region RemoveAll
+        /// <summary>
+        /// 清理整个db数据 
+        /// </summary>
+        public static void RemoveAll(this RedisProvider rp)
+        {
+            rp.DefaultDB.Execute(" flushdb ");
+        }
+        #endregion
+
+        /// <summary>
+        /// 设置哈希值
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="redisProvider"></param>
+        /// <param name="rp"></param>
         /// <param name="key"></param>
-        /// <param name="cacheTime">缓存时长（分钟） 值为null时使用默认时间7天,-1为永不过期</param>
-        /// <param name="lockKey">公共事务锁key</param>
-        /// <param name="func"></param>
-        /// <param name="lockExpire">事务锁过期时间（s）</param>
-        /// <param name="nullCacheTime">缓存数据为null时的缓存时常（分钟），默认null取cacheTime</param>
+        /// <param name="value"></param>
+        /// <param name="expires"></param>
         /// <returns></returns>
-        public static T TryToGetDataFromCache<T>(this RedisProvider redisProvider, string key,int? cacheTime, string lockKey, Func<T> func, double lockExpire = 30,int?  nullCacheTime=null)
+        public static bool HashSet<T>(this RedisProvider rp, string key, T value, int expires = Expires)
         {
-            if (redisProvider.HasKey(key))
+            var result = rp.DefaultDB.HashSet(key, "data", value.ToJson());
+            if (expires > 0)
             {
-                return redisProvider.Get<T>(key);
+                rp.KeyExpire(key, expires);
+            }
+            return result;
+        }
+
+        public static T HashGet<T>(this RedisProvider rp, string key)
+        {
+            var data = rp.DefaultDB.HashGet(key, "data");
+            return data.ToString().ToObj<T>();
+        }
+
+        public static bool KeyExpire(this RedisProvider rp, string key, int expires = Expires)
+        {
+            return rp.DefaultDB.KeyExpire(key, TimeSpan.FromSeconds(expires));
+        }
+
+        public static bool Delete(this RedisProvider rp, string key, bool addPrefix)
+        {
+            if (addPrefix)
+            {
+                key = $"{_cacheKeyPrefix}:{key}";
+            }
+
+            return Delete(rp, key);
+        }
+
+        /// <summary>
+        /// 删除指定key，默认不加前缀
+        /// </summary>
+        /// <param name="rp"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static bool Delete(this RedisProvider rp, string key)
+        {
+            return rp.DefaultDB.KeyDelete(key);
+        }
+        public static bool KeyExists(this RedisProvider rp, string key)
+        {
+            return rp.DefaultDB.KeyExists(key);
+        }
+
+        /// <summary>
+        /// 根据包含关键词的key列表
+        /// </summary>
+        /// <param name="rp"></param>
+        /// <param name="pattern">可包含通配符的key值，如【*userId_*】->匹配包含【userId_】的所有key</param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public static List<string> GetKeyList(this RedisProvider rp, string pattern, int pageSize = 1000, bool addPrefix = true)
+        {
+            if (addPrefix && !pattern.StartsWith("*"))
+            {
+                pattern = $"{_cacheKeyPrefix}:{pattern}";
+            }
+            return rp.Conn.GetServer(rp.Conn.GetEndPoints()[0]).Keys(database: rp.DefaultDB.Database, pattern: pattern, pageSize: pageSize).ToList().ConvertAll(a => a.ToString());
+        }
+        /// <summary>
+        /// 尝试从redis缓存中取数据，如果取不到，则将func的返回数据缓存到Cache中，并返回。
+        /// 返回值为null不会缓存
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="rp"></param>
+        /// <param name="key"></param>
+        /// <param name="func"></param>
+        /// <param name="expries">缓存时长（s）,-1为永不过期</param>
+        /// <returns></returns>
+        public static T TryToGetFromHashCache<T>(this RedisProvider rp, string key, Func<T> func, int expries = RedisProviderExtension.Expires)
+        {
+            if (rp.KeyExists(key))
+            {
+                return rp.HashGet<T>(key);
             }
             if (func == null)
             {
                 return default(T);
             }
-
             var data = default(T);
-            
-            Action setAct = ()=>{
-                data = func();
-                //如果设置了空值缓存时间，并且data为空值。
-                if (nullCacheTime.HasValue && data == null)
-                {
-                    redisProvider.Set(key, data, nullCacheTime.Value);
-                }
-                //未设置空值缓存时间或者data不为null
-                else 
-                {
-                    if (cacheTime.HasValue)
-                        redisProvider.Set(key, data, cacheTime.Value);
-                    else
-                        redisProvider.Set(key, data);
-                }
-            };
-            if (string.IsNullOrWhiteSpace(lockKey))
+            data = func();
+            if (data != null)
             {
-                setAct();
+                rp.HashSet(key, data, expries);
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        ///获取redis事务锁
+        /// </summary>
+        /// <param name="rp"></param>
+        /// <param name="key"></param>
+        /// <param name="token"></param>
+        /// <param name="timeSpan"></param>
+        /// <returns>获取锁是否成功</returns>
+        public static bool LockTake(this RedisProvider rp, string key, string token, TimeSpan timeSpan)
+        {
+            return rp.DefaultDB.LockTake(key, token, timeSpan);
+        }
+
+        /// <summary>
+        /// 释放redis事务锁
+        /// </summary>
+        /// <param name="rp"></param>
+        /// <param name="key"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static bool LockRelease(this RedisProvider rp, string key, string token)
+        {
+            return rp.DefaultDB.LockRelease(key, token);
+        }
+        #region set集合数据类型的操作
+        /// <summary>
+        /// 获取整个set集合
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="addPrefix"></param>
+        /// <returns></returns>
+        public static List<T> SGet<T>(this RedisProvider rp, string key, bool addPrefix = true)
+        {
+            if (addPrefix)
+            {
+                key = $"{_cacheKeyPrefix}:{key}";
+            }
+            var data = rp.DefaultDB.SetMembers(key);
+            return JsonConvert.DeserializeObject<List<T>>(data.ToJson());
+        }
+
+        public static bool SAdd<T>(this RedisProvider rp, string key, T value, bool addPrefix = true)
+        {
+            if (addPrefix)
+            {
+                key = $"{_cacheKeyPrefix}:{key}";
+            }
+            if (value.GetType() == typeof(string))
+            {
+                return rp.DefaultDB.SetAdd(key, value.ToString());
             }
             else
             {
-                if (key == lockKey)
-                {
-                    throw new ArgumentException("数据key和事务锁的key值不能相同");
-                }
-                using (var rLock=redisProvider.GetLock(lockKey, lockExpire))
-                {
-                    if ((rLock as RedisLockTake).LockResult)
-                    {
-                        //双检机制，防止在上面判断之后在下面set之前被其他线程写入
-                        if (redisProvider.HasKey(key))
-                        {
-                            return redisProvider.Get<T>(key);
-                        }
-                        setAct();
-                    }
-                }
+                return rp.DefaultDB.SetAdd(key, value.ToJson());
             }
-            return data;
         }
+
+        /// <summary>
+        /// 向同一个set集合批量插入数据
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="rp"></param>
+        /// <param name="key"></param>
+        /// <param name="valueList"></param>
+        /// <param name="addPrefix"></param>
+        public static void SBulkAdd<T>(this RedisProvider rp, string key, IEnumerable<T> valueList, bool addPrefix = true)
+        {
+            rp.SBulkTask(key, valueList, (batch, k, val) =>
+            {
+                return batch.SetAddAsync(k, val.ToJson());
+            }, addPrefix);
+        }
+
+        /// <summary>
+        /// 在同一个set集合中批量删除数据
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="rp"></param>
+        /// <param name="key"></param>
+        /// <param name="valueList"></param>
+        /// <param name="addPrefix"></param>
+        public static void SBulkRemove<T>(this RedisProvider rp, string key, IEnumerable<T> valueList, bool addPrefix = true)
+        {
+            rp.SBulkTask(key, valueList, (batch, k, val) =>
+            {
+                return batch.SetRemoveAsync(k, val.ToJson());
+            }, addPrefix);
+        }
+
+        /// <summary>
+        ///set类型缓存，同一个key下数据的批量处理
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="rp"></param>
+        /// <param name="key"></param>
+        /// <param name="valueList"></param>
+        /// <param name="taskFunc"></param>
+        /// <param name="addPrefix"></param>
+        private static void SBulkTask<T>(this RedisProvider rp, string key, IEnumerable<T> valueList, Func<IBatch, string, string, Task> taskFunc, bool addPrefix)
+        {
+            if (taskFunc == null)
+            {
+                return;
+            }
+            if (addPrefix)
+            {
+                key = $"{_cacheKeyPrefix}:{key}";
+            }
+            var batch = rp.DefaultDB.CreateBatch();
+            var tasks = new List<Task>();
+
+            foreach (var val in valueList)
+            {
+                tasks.Add(taskFunc.Invoke(batch, key, val.ToJson()));
+            }
+
+            batch.Execute();
+            var result = rp.DefaultDB.SetMembersAsync(key);
+            tasks.Add(result);
+            Task.WhenAll(tasks.ToArray());
+        }
+        /// <summary>
+        /// 判断key下的set中是否包含指定值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="addPrefix"></param>
+        /// <returns></returns>
+        public static bool SContains<T>(this RedisProvider rp, string key, T value, bool addPrefix = true)
+        {
+            if (addPrefix)
+            {
+                key = $"{_cacheKeyPrefix}:{key}";
+            }
+
+            return rp.DefaultDB.SetContains(key, value.ToJson());
+        }
+        /// <summary>
+        /// 从指定集合中移除itemValue
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="addPrefix"></param>
+        /// <returns></returns>
+        public static bool SRemove<T>(this RedisProvider rp, string key, T value, bool addPrefix = true)
+        {
+            if (addPrefix)
+            {
+                key = $"{_cacheKeyPrefix}:{key}";
+            }
+            return rp.DefaultDB.SetRemove(key, value.ToJson());
+        }
+
+        public static T SPop<T>(this RedisProvider rp, string key, bool addPrefix = true)
+        {
+            if (addPrefix)
+            {
+                key = $"{_cacheKeyPrefix}:{key}";
+            }
+
+            var data = rp.DefaultDB.SetPop(key);
+            return data.ToString().ToObj<T>();
+        }
+        #endregion set集合数据类型的操作
     }
 }
