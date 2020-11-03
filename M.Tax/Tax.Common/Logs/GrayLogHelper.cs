@@ -5,11 +5,14 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Tax.Common.Extention;
 
 namespace Tax.Common.Logs
 {
     public class GrayLogHelper
     {
+        static int titleMaxLength = 300;
+        static int msgMaxLength = 20000;
         static string Host = BaseCore.AppSetting["graylogHost"];
         static int Port = Convert.ToInt32(BaseCore.AppSetting["graylogPort"]);
         static string app = BaseCore.AppSetting["appName"];
@@ -19,6 +22,12 @@ namespace Tax.Common.Logs
             IPAddress[] ipAddresses = hostInfo.AddressList;
             IPEndPoint ipep = new IPEndPoint(ipAddresses[0], Port);
             Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+            //udp消息长度上限为65507。超过会报错
+            if (!shortMsg.IsNullOrWhiteSpace() && shortMsg.Length > titleMaxLength)
+                shortMsg = shortMsg.Substring(0, titleMaxLength) +"...";
+            if (!msg.IsNullOrWhiteSpace() && msg.Length > msgMaxLength)
+                msg = msg.Substring(0, msgMaxLength) + "...";
 
             var model = new GrayLogModel(shortMsg, msg);
             var json = JsonConvert.SerializeObject(model,
