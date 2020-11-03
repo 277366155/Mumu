@@ -91,8 +91,8 @@ namespace Tax.AdminWeb
                 FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), BaseCore.Configuration["ImgPath:tempPath"])),
                 RequestPath = "/"+ BaseCore.Configuration["ImgPath:tempPath"]
             });
-            app.UseRouting();
-            app.UseCookiePolicy();
+            //app.UseCookiePolicy();
+            app.UseRouting();            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute("areas","{area:exists}/{controller}/{action=Index}");

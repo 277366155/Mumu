@@ -53,5 +53,11 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tax.Common\Tax.Common.csproj">
+      <Project>{B9825209-89B6-4A77-9F7F-ACDCDC7DE89A}</Project>
+      <Name>Tax.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace Tax.Common
@@ -39,6 +41,19 @@ namespace Tax.Common
             {
                 return InitConfigurationBuilder().Build();
             }
+        }
+
+        /// <summary>
+        /// 配置文件修改时触发
+        /// </summary>
+        /// <param name="act"></param>
+        public static void ConfigurationOnChange(Action act)
+        {
+            if (act == null)
+                act = () => { Trace.WriteLine("appsettings.json was changed"); };
+
+            var token = Configuration.GetReloadToken();
+            ChangeToken.OnChange(()=>Configuration.GetReloadToken(), act);
         }
 
         /// <summary>

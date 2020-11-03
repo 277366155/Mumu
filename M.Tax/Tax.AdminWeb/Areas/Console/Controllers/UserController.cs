@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +32,7 @@ namespace Tax.AdminWeb.Areas.Console.Controllers
 
         [HttpPost]
         public async Task<ActionResult<BaseResult>> Login([FromForm]LoginParam loginParam)
-        {
+        {            
             var result = await _userSer.LoginCheck(loginParam,HttpContext);
             return Json(result);
         }

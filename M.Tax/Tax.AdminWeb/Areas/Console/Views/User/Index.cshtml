@@ -5,7 +5,6 @@
 }
 @section style
 {
-
     <link href="/vendor/layui/css/modules/layer/default/layer.css" rel="stylesheet" />
 }
 
@@ -19,6 +18,7 @@
                 $("#LoginForm").ajaxSubmit(function (data) {
                     if (data != undefined && data.isSuccessed != undefined) {
                         if (!data.isSuccessed) {
+                            $("#submitBtn").focus();
                             layer.alert(data.msg);
                         }
                         else {

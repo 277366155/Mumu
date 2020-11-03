@@ -7,6 +7,7 @@ using System.Messaging;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Tax.Common;
 
 namespace ConsoleApp1
 {
@@ -14,6 +15,12 @@ namespace ConsoleApp1
     {
        static  string type = ConfigurationManager.AppSettings["type"];
         static void Main(string[] args)
+        {
+
+        }
+
+
+        static void MQTest()
         {
             while (true)
             {
@@ -29,9 +36,7 @@ namespace ConsoleApp1
                     MSMQTest();
                 }
             }
-            
         }
-
         static void MSMQTestCount()
         {
             string path = ".\\private$\\td365_offcommitdata_"+ type;
