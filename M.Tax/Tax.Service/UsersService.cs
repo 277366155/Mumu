@@ -26,7 +26,7 @@ namespace Tax.Service
         public async Task<BaseResult> LoginCheck(LoginParam param)
         {
             param.Password = DEncrypt.Encrypt(param.Password);
-            var data = await _usersRep.FirstOrDefault(" and UserName=@UserName and Password=@Password", param);
+            var data = await _usersRep.FirstOrDefaultAsync(" and UserName=@UserName and Password=@Password", param);
             if (data !=null)
             {
                BaseCore.CurrentContext.SetCookie(param.UserName);
@@ -50,7 +50,7 @@ namespace Tax.Service
         public async Task<bool> InserUser(InsertUserParam param)
         {
             param.Password = DEncrypt.Encrypt(param.Password);
-            return (await _usersRep.InsertUser(param)) > 0;
+            return (await _usersRep.InsertUserAsync(param)) > 0;
         }
 
         /// <summary>

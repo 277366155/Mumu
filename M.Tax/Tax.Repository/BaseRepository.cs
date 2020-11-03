@@ -20,7 +20,7 @@ namespace Tax.Repository
         /// 
         /// </summary>
         /// <returns></returns>
-        protected static IDbConnection CreateMysqlConnection()
+        public static IDbConnection CreateMysqlConnection()
         {
            var conn= new MySqlConnection(_conStr);
             conn.Open();
@@ -32,7 +32,7 @@ namespace Tax.Repository
             _conStr = option.ConnectionString;
         }
 
-        public virtual async Task<T> GetModel(int id)
+        public virtual async Task<T> GetModelAsync(int id)
         {
             using (var conn=CreateMysqlConnection())
             {
@@ -41,7 +41,7 @@ namespace Tax.Repository
             }
         }
 
-        public virtual async Task<IEnumerable<T>> GetList(string filter,object param=null)
+        public virtual async Task<IEnumerable<T>> GetListAsync(string filter,object param=null)
         {
             using (var conn = CreateMysqlConnection())
             {
@@ -49,14 +49,14 @@ namespace Tax.Repository
                 return await conn.QueryAsync<T>(sql, param);
             }
         }
-        public virtual async Task<T> FirstOrDefault(string filter, object param = null)
+        public virtual async Task<T> FirstOrDefaultAsync(string filter, object param = null)
         {
-            var list = await GetList(filter, param);
+            var list = await GetListAsync(filter, param);
 
             return list.FirstOrDefault();
         }
 
-        public virtual async Task<Pager<T>> GetPageList(string filter,int pageIndex,int pageSize, object param = null,string sort="ID desc")
+        public virtual async Task<Pager<T>> GetPageListAsync(string filter,int pageIndex,int pageSize, object param = null,string sort="ID desc")
         {
             var result = new Pager<T>();
             using (var conn = CreateMysqlConnection())
@@ -77,18 +77,22 @@ namespace Tax.Repository
         }
         //update/delete/insert...[todo]
 
-        public virtual async Task<int> Update(T param) 
+        public virtual async Task<int> UpdateAsync(T param, IDbTransaction tran = null)
         {
             var fieldStr = new StringBuilder();
             foreach (var p in typeof(T).GetProperties())
             {
-                    fieldStr.Append($" `{p.Name}`=@{p.Name},");              
+                fieldStr.Append($" `{p.Name}`=@{p.Name},");
             }
-            using (var conn = CreateMysqlConnection())
-            {
-                var sql = $"update `{typeof(T).Name.ToLower()}` set {fieldStr.ToString().Trim(',')} where id = {param.ID}";
-                return await conn.ExecuteAsync(sql, param);
-            }
+            var conn = (tran == null || tran.Connection == null) ? CreateMysqlConnection() : tran.Connection;
+
+            var sql = $"update `{typeof(T).Name.ToLower()}` set {fieldStr.ToString().Trim(',')} where id = {param.ID}";
+            var result = await conn.ExecuteAsync(sql, param, tran);
+
+            if (tran == null || tran.Connection == null)
+                conn.Dispose();
+
+            return result;
         }
         /// <summary>
         ///查询存在数量
@@ -96,7 +100,7 @@ namespace Tax.Repository
         /// <param name="filter"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual async Task<int>  Count(string filter, object param = null)
+        public virtual async Task<int>  CountAsync(string filter, object param = null)
         {
             using (var conn = CreateMysqlConnection())
             {
@@ -105,7 +109,7 @@ namespace Tax.Repository
             }
         }
 
-        public virtual async Task<int> Insert(T model)
+        public virtual async Task<int> InsertAsync(T model)
         {
             using (var conn = CreateMysqlConnection())
             {
@@ -145,7 +149,7 @@ namespace Tax.Repository
             }
         }
 
-        public virtual async Task<int> Delete(int id)
+        public virtual async Task<int> DeleteAsync(int id)
         {
             using (var conn = CreateMysqlConnection())
             {

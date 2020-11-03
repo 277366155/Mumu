@@ -15,7 +15,7 @@ namespace Tax.Repository
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public async Task<int> InsertUser(InsertUserParam param)
+        public async Task<int> InsertUserAsync(InsertUserParam param)
         {
             var sql = $@"insert into users (UserName,Password,Email) values(@UserName,@Password,@Email);";
             using (var conn = CreateMysqlConnection())

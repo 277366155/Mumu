@@ -9,7 +9,7 @@ namespace Tax.Model.Enum
         /// <summary>
         /// 菜单图标
         /// </summary>        
-        MenuIco=0,
+        MenuIcon=0,
         /// <summary>
         /// 表单模板图
         /// </summary>
@@ -17,7 +17,7 @@ namespace Tax.Model.Enum
         /// <summary>
         /// 背景图片
         /// </summary>
-        BackGroundImg=2,
+        BackgroundImg=2,
         /// <summary>
         /// PC端欢迎页图片
         /// </summary>

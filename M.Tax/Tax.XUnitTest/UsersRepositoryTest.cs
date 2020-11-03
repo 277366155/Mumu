@@ -21,12 +21,20 @@ namespace Tax.XUnitTest
         public void InsertTest()
         {
             var userRep = new UsersRepository(new RepositoryOption(ConnStr));
-          var result=  userRep.Insert(new Users() {  UserName="boo", Password="123", CreateTime= DateTime.Now}).Result;
+          var result=  userRep.InsertAsync(new Users() {  UserName="boo", Password="123", CreateTime= DateTime.Now}).Result;
             OutPut.WriteLine($"data:{result}"); ;
             Assert.Equal(1, result);
 
            //var data = userRep.GetModel("3").Result;
            // Assert.Equal(data.UserName,"boo");
+        }
+        [Theory]
+        [InlineData("8BrVyZqsJf3MA116kk2tXA==")]
+        public void PwdTest(string pwd)
+        {
+            var d= DEncrypt.Decrypt(pwd);
+            OutPut.WriteLine(d);
+
         }
     }
 }

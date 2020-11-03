@@ -27,39 +27,38 @@ namespace Tax.Service
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public async Task<BaseResult> SaveSlideAsync(SaveSlideParam param)
+        public async Task<BaseResult> SaveStaticFileAsync(SaveStaticFilesParamBase param)
         {
-            var model = await _staticFilesRep.GetModel(param.Id);//.Count($" and id ={param.Id}") > 0;
+            var model = await _staticFilesRep.GetModelAsync(param.Id);//.Count($" and id ={param.Id}") > 0;
             if (model==null)
             {
                 return await SaveUploadFileAsync(param);
             }
             else
             {
-                return await UpdateSlideAsync(param,model);
+                return await UpdateStaticFileAsync(param,model);
             }
         }
 
         /// <summary>
-        /// 更新Slide
+        /// 更新文件
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public async Task<BaseResult> UpdateSlideAsync(SaveSlideParam param,StaticFiles model)
+        public async Task<BaseResult> UpdateStaticFileAsync(SaveStaticFilesParamBase param,StaticFiles model)
         {
-            var fileName = param.SavePath.Substring(param.SavePath.LastIndexOf('/')+1);
-            var data = await _staticFilesRep.GetModel(param.Id);
+            var fileName = param.SavePath.Substring(param.SavePath.LastIndexOf('/')+1); 
             //文件不存在则是新上传的
             //if (!File.Exists(Directory.GetCurrentDirectory() + $"/{BaseCore.Configuration["ImgPath:savePath"]}/"+fileName))
             if(model.SavePath!=fileName)
             {
-                MoveFile(fileName);
+                //MoveFile(fileName);
                 //同时删除原图片。。
-                DeleteFile(data.SavePath);
+                DeleteFile(model.SavePath);
             }
             //只保存文件名
             param.SavePath = param.SavePath.Substring(param.SavePath.LastIndexOf('/') + 1);
-            var updateResult = await _staticFilesRep.Update(Mapper.Map<StaticFiles>(param));
+            var updateResult = await _staticFilesRep.UpdateAsync(Mapper.Map<StaticFiles>(param));
             if (updateResult > 0)
             {
                 return new Success("保存成功");
@@ -70,12 +69,12 @@ namespace Tax.Service
             }
         }
         #region 文件上传
-        public async Task<BaseResult> SaveUploadFileAsync(SaveSlideParam param)
+        public async Task<BaseResult> SaveUploadFileAsync(SaveStaticFilesParamBase param)
         {
-            MoveFile(param.SavePath.Substring(param.SavePath.LastIndexOf('/')));
+            //MoveFile(param.SavePath.Substring(param.SavePath.LastIndexOf('/')));
             //只保存文件名
             param.SavePath =  param.SavePath.Substring(param.SavePath.LastIndexOf('/')+1);
-            var insertResult = await _staticFilesRep.InsertFile(Mapper.Map<StaticFiles>(param));
+            var insertResult = await _staticFilesRep.InsertFileAsync(Mapper.Map<StaticFiles>(param));
             if (insertResult > 0)
             {
                 return new Success("保存成功");
@@ -86,30 +85,30 @@ namespace Tax.Service
             }
         }
 
-        /// <summary>
-        /// 将指定文件从临时目录移动到正式目录
-        /// </summary>
-        /// <param name="fileName"></param>
-        public void MoveFile(string fileName)
-        {
-            var saveDirPath = Directory.GetCurrentDirectory() + $"/{BaseCore.Configuration["ImgPath:savePath"]}/";
-            var tempPath = Directory.GetCurrentDirectory() + $"/{BaseCore.Configuration["ImgPath:tempPath"]}/";
-            if (!File.Exists(tempPath + fileName))
-            {
-                throw new Exception($"文件不存在：[{tempPath + fileName}]"); //return false;
-            }
+        ///// <summary>
+        ///// 将指定文件从临时目录移动到正式目录
+        ///// </summary>
+        ///// <param name="fileName"></param>
+        //public void MoveFile(string fileName)
+        //{
+        //    var saveDirPath = Directory.GetCurrentDirectory() + $"/{BaseCore.Configuration["ImgPath:savePath"]}/";
+        //    var tempPath = Directory.GetCurrentDirectory() + $"/{BaseCore.Configuration["ImgPath:tempPath"]}/";
+        //    if (!File.Exists(tempPath + fileName))
+        //    {
+        //        throw new Exception($"文件不存在：[{tempPath + fileName}]"); //return false;
+        //    }
 
-            if (!Directory.Exists(saveDirPath))
-            {
-                Directory.CreateDirectory(saveDirPath);
-            }
-            //文件已存在
-            if (File.Exists(saveDirPath + fileName))
-            {
-                throw new Exception($"文件已存在：[{saveDirPath + fileName}]");
-            }
-            File.Move(tempPath + fileName, saveDirPath + fileName);
-        }
+        //    if (!Directory.Exists(saveDirPath))
+        //    {
+        //        Directory.CreateDirectory(saveDirPath);
+        //    }
+        //    //文件已存在
+        //    if (File.Exists(saveDirPath + fileName))
+        //    {
+        //        throw new Exception($"文件已存在：[{saveDirPath + fileName}]");
+        //    }
+        //    File.Move(tempPath + fileName, saveDirPath + fileName);
+        //}
 
         public void DeleteFile(string fileName)
         {
@@ -124,7 +123,7 @@ namespace Tax.Service
         {
             var result = new Result<string>() { IsSuccessed = false, Data = "", Msg = "上传失败" };
             string fullName = "";
-            string dirTempPath = Directory.GetCurrentDirectory() + $"/{BaseCore.Configuration["ImgPath:tempPath"]}/";
+            string dirTempPath = Directory.GetCurrentDirectory() + $"/{BaseCore.Configuration["ImgPath:savePath"]}/";
             long maxLength = 1024 * 1024 * 30;//最大30m
             var files = BaseCore.CurrentContext.Request.Form.Files;
             if (files.Count <= 0)
@@ -166,21 +165,39 @@ namespace Tax.Service
             }
             result.IsSuccessed = true;
             result.Msg = "上传成功";
-            result.Data = $"/{BaseCore.Configuration["ImgPath:tempPath"]}/" + fullName;
+            result.Data = $"/{BaseCore.Configuration["ImgPath:savePath"]}/" + fullName;
             return result;
         }
         #endregion 文件上传
 
-        public async Task<Pager<Slide>> GetPagerListAsync(PagerParam pager)
+        public async Task<Pager<Slide>> GetPageListAsync(PagerParam pager)
         {
-         var data =await  _staticFilesRep.GetPageList($"  and Type={(int)FileType.Slide} ",pager.PageIndex,pager.PageSize,null,"sortID ,Title");
+         var data =await  _staticFilesRep.GetPageListAsync($"  and Type={(int)FileType.Slide} ",pager.PageIndex,pager.PageSize,null,"sortID ,Title");
             return Mapper.Map<Pager<Slide>>(data);
+        }
+
+        /// <summary>
+        /// 获取首页欢迎界面数据
+        /// </summary>
+        /// <returns></returns>
+        public async Task<StaticFiles> GetWelcomeImgFileAsync()
+        {
+           return  await _staticFilesRep.FirstOrDefaultAsync($" and Type={(int)FileType.WelcomeImg} ");
+        }
+
+        /// <summary>
+        /// 获取菜单背景图片
+        /// </summary>
+        /// <returns></returns>
+        public async Task<StaticFiles> GetMenuBackgroundImgFileAsync()
+        {
+            return await _staticFilesRep.FirstOrDefaultAsync($" and Type={(int)FileType.BackgroundImg} ");
         }
 
         public async Task<BaseResult> DeleteSlideAsync(int id)
         {
-            var data = await _staticFilesRep.GetModel(id);
-            var deleteResult = await _staticFilesRep.Delete(id);
+            var data = await _staticFilesRep.GetModelAsync(id);
+            var deleteResult = await _staticFilesRep.DeleteAsync(id);
             if (deleteResult > 0)
             {
                 DeleteFile(data.SavePath);

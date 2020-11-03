@@ -1,0 +1,132 @@
+﻿@{
+    ViewData["Title"] = "MenuBackgroundImg";
+    Layout = "~/Shared/_root.cshtml";
+}
+
+<div class="card" style="min-height:600px; ">
+    <div class="card-header bg-light">
+        <h4>菜单背景管理</h4>
+    </div>
+
+    <div class="card-body">
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label" style=" width: 200px">当前菜单背景：</label>
+            <div class="layui-input-inline" style="width:400px" id="divImg">
+                @if (ViewBag.BackgroundImg == null)
+                {
+                    <img src="/imgs/noimg.jpg" style="max-width:400px;max-height:600px" />
+                    <input type="hidden" id="hidFileName" />
+                    <input type="hidden" value="0" id="hidId" />
+                    <input type="hidden" id="hidCreateTime" />
+                }
+                else
+                {
+                    <img src="@ViewBag.BackgroundImg.SavePath " style="max-width:400px;max-height:600px;cursor:pointer " id="img" />
+                    <input type="hidden" value="@ViewBag.BackgroundImg.SavePath" id="hidFileName" />
+                    <input type="hidden" value="@ViewBag.BackgroundImg.ID" id="hidId" />
+                    <input type="hidden" value="@ViewBag.BackgroundImg.CreateTime" id="hidCreateTime" />
+                }
+
+            </div>
+        </div>
+        <div class="layui-form-item" id="divUpload" style=" margin-top:30px; display:none">
+            <label class="layui-form-label" style=" width: 200px">选择新的图片：</label>
+            <form enctype="multipart/form-data" id="formFile" method="post">
+                <input class="btn btn-outline-success" id="fileInput" type="file" name="imgUrl" style=" width: 400px">
+            </form>
+        </div>
+        <div class="layui-form-item layui-form-text" style=" margin-top:30px">
+            <label class="layui-form-label" style=" width: 200px">备注信息：</label>
+            <div class="layui-input-inline" style="width:400px">
+                @if (ViewBag.BackgroundImg == null)
+                {
+                    <textarea rows="4" placeholder="无" class="form-control"  disabled="disabled" id="txtDescription"></textarea>
+                }
+                else
+                {
+                    <textarea rows="4" placeholder="" class="form-control"   disabled="disabled" id="txtDescription">@ViewBag.BackgroundImg.Description </textarea>
+                }
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="margin-left:500px;margin-top:30px">
+                <button class="btn btn-rounded btn-warning" style=" display:none" id="btnCancel">取消</button>
+                <button class="btn btn-rounded btn-danger" style=" " id="btnEdit">编辑</button>
+                <button class="btn btn-rounded btn-success" style=" display:none" id="btnSave">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Script{
+    <script type="text/javascript">
+        $(function () {
+            $("#img").click(function () {
+                layer.photos({ photos: "#divImg", anim: 5 });
+            });
+
+            $("#btnEdit").click(function () {
+                $("#btnCancel").show();
+                $("#btnSave").show();
+                $("#btnEdit").hide();
+                $("#txtDescription").removeAttr("disabled");
+                $("#divUpload").show();
+            });
+            $("#btnCancel").click(function () {
+                location.reload();
+            });
+
+            $("#btnSave").click(function () {
+                var filePath = $("#hidFileName").val();
+                var uploadFile = $("#fileInput").val();
+                if (filePath != undefined && filePath != null && filePath != "" && (uploadFile == undefined || uploadFile == null || uploadFile == "")) {
+                    SaveInfo();
+                }
+                else {
+                    $.ajax({
+                        async: false,
+                        url: '/Console/Slide/UploadFileAsync',
+                        type: 'POST',
+                        cache: false,
+                        data: new FormData($('#formFile')[0]),
+                        processData: false,
+                        contentType: false
+                    }).done(function (data) {
+                        if (data.isSuccessed) {
+                            $("#hidFileName").val(data.data);
+                            SaveInfo();
+                        }
+                        else {
+                            layer.alert(data.msg);
+                            return false;
+                        }
+                    });
+                }
+            });
+        });
+
+        //保存图片
+        function SaveInfo() {
+            $.post("/Console/PC/SaveBackgroundImgAsync",
+                {
+                    id: $("#hidId").val(),
+                    createTime: $("#hidCreateTime").val(),
+                    Description: $("#txtDescription").val(),
+                    savePath: $("#hidFileName").val()
+                },
+                function (data) {
+                    if (data.isSuccessed) {
+                        layer.alert(data.msg, function () {
+                            location.reload();
+                        });
+                        return true;
+                    }
+                    layer.alert(data.msg);
+                });
+        }
+    </script>
+}

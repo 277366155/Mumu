@@ -49,8 +49,10 @@ namespace Tax.AdminWeb
             services.AddSingleton(new RepositoryOption(BaseCore.Configuration.GetConnectionString("TaxDB")));
             services.AddSingleton<UsersRepository>();
             services.AddSingleton<StaticFilesRepository>();
+            services.AddSingleton<ClientMenusRepository>();
             services.AddSingleton<UsersService>();
             services.AddSingleton<StaticFilesService>();
+            services.AddSingleton<ClientMenusService>();
 
             BaseCore.ServiceProvider = services.BuildServiceProvider();
         }

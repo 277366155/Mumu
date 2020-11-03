@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Tax.Model
+﻿namespace Tax.Model
 {
     public class BaseResult
     {

@@ -31,7 +31,7 @@ namespace Tax.Service
                 ////});
 
                 //幻灯片显示名同标题
-                cfg.CreateMap<SaveSlideParam, StaticFiles>().AfterMap((s,d)=> {                     
+                cfg.CreateMap<SaveStaticFilesParamBase, StaticFiles>().AfterMap((s,d)=> {                     
                     d.ShowName = s.Title;
                     d.Extensions = s.SavePath.Substring(s.SavePath.LastIndexOf('.'));
                     d.Version = DateTime.Now.ToMilliTicks().ToString();
@@ -43,6 +43,11 @@ namespace Tax.Service
                 cfg.CreateMap<Pager<StaticFiles>, Pager<Slide>>().AfterMap((s,d)=> {
                     d.DataList = Mapper.Map<List<Slide>>(s.DataList);
                 });
+                cfg.CreateMap<SaveMenuParam, ClientMenus>().AfterMap((s, d) => {
+                    d.Version = DateTime.Now.ToMilliTicks().ToString();
+                    d.Enable = true;
+                });
+                
             });
         }
     }

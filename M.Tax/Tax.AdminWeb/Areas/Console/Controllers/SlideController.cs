@@ -30,14 +30,14 @@ namespace Tax.AdminWeb.Areas.Console.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveSlideAsync(SaveSlideParam param)
         {
-          var data =await  _staticFilesService.SaveSlideAsync(param);
+          var data =await  _staticFilesService.SaveStaticFileAsync(param);
             return Json(data); 
         }
 
         [HttpPost]
         public async Task<IActionResult> GetSlidesPager(PagerParam pager)
         {
-            var data =await _staticFilesService.GetPagerListAsync(pager);
+            var data =await _staticFilesService.GetPageListAsync(pager);
             return Json(data);
         }
 

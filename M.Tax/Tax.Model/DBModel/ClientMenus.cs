@@ -19,7 +19,7 @@ namespace Tax.Model.DBModel
         /// <summary>
         /// 图标文件ID
         /// </summary>
-        public int IcoFileID { get; set; }        
+        public int IconFileID { get; set; }        
         /// <summary>
         /// 客户端类型
         /// </summary>
@@ -37,7 +37,4 @@ namespace Tax.Model.DBModel
         /// </summary>
         public string Version { get; set; }
     }
-
-
-
 }

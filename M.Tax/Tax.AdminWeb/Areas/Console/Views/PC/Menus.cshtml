@@ -1,12 +1,12 @@
 ﻿
 @{
-    ViewData["Title"] = "幻灯片管理";
+    ViewData["Title"] = "PC客户端菜单管理";
     Layout = "~/Shared/_root.cshtml";
 }
 
 <div class="card">
     <div class="card-header bg-light">
-        <h4>幻灯片管理   </h4>
+        <h4>PC客户端菜单管理 </h4>
     </div>
 
     <div class="card-body">
@@ -17,23 +17,27 @@
             <table class="table table-striped" id="tbList">
                 <thead>
                     <tr>
-                        <th width="10%">编号</th>
-                        <th width="20%">名称</th>
-                        <th width="20%">图片</th>
+                        <th width="5%">编号</th>
+                        <th width="15%">菜单名称</th>
+                        <th width="10%">菜单图标</th>
+                        <th width="20%">菜单地址</th>
+                        <th width="15%">父级菜单</th>
                         <th width="10%">显示排序</th>
-                        <th width="20%">创建时间</th>
-                        <th width="20%">操作</th>
+                        <th width="15%">创建时间</th>
+                        <th width="10%">操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="item in items">
                         <td>{{item.id}}</td>
-                        <td class="text-nowrap">{{item.title}}</td>
+                        <td class="text-nowrap">{{item.menuName}}</td>
                         <td>
                             <div v-bind:id="item.id">
-                                <img v-bind:src="item.path" style="max-width:100px;max-height:50px;cursor:pointer" onclick="ViewImg(this)" />
+                                <img v-bind:src="item.iconPath" style="max-width:100px;max-height:50px;cursor:pointer" onclick="ViewImg(this)" />
                             </div>
                         </td>
+                        <td>{{item.menuUrl}}</td>
+                        <td>{{item.parentName}}</td>
                         <td>{{item.sortID}}</td>
                         <td>{{item.bizCreateTime}}</td>
                         <td>
@@ -63,8 +67,26 @@
                     <div class="row">
                         <div class="col-md-10">
                             <div class="form-group">
-                                <label for="normal-input" class="form-control-label">名称</label>
+                                <label for="normal-input" class="form-control-label">菜单名称</label>
                                 <input type="text" id="inputName" class="form-control" maxlength="32">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <label for="normal-input" class="form-control-label">菜单地址</label>
+                                <input type="text" id="inputUrl" class="form-control" maxlength="1024">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <label for="normal-input" class="form-control-label">父级菜单</label>
+                                <select id="selectParent">
+                                    <option value="0">无</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -79,20 +101,10 @@
                     <div class="row">
                         <div class="col-md-10">
                             <div class="form-group">
-                                <label for="normal-input" class="form-control-label">选择图片</label>
+                                <label for="normal-input" class="form-control-label">上传菜单图标</label>
                                 <form enctype="multipart/form-data" id="formFile" method="post">
                                     <input class="btn btn-outline-success form-control" id="fileInput" type="file" name="imgUrl">
                                 </form>
-                                @*<table>
-                                    <tr>
-                                        <td>
-                                            <form enctype="multipart/form-data" id="formFile" method="post">
-                                                <input class="btn btn-outline-success" id="fileInput" type="file" name="imgUrl">
-                                            </form>
-                                        </td>*@
-                                @*<td style="vertical-align:top;"><button class="btn btn-rounded btn-success" id="btnFileUpload" style="margin-left:10px">上 传</button></td>*@
-                                @*</tr>
-                                    </table>*@
                             </div>
                         </div>
                     </div>
@@ -116,7 +128,7 @@
 </div>
 <input type="hidden" id="hidFileName" />
 <input type="hidden" id="hidId" />
-
+<input type="hidden" id="hidIconFileID" />
 
 @section Script{
     <script type="text/javascript">
@@ -145,16 +157,18 @@
                     $("#title").text("编辑");
                     this.id = obj.id;
                     this.createTime = obj.createTime;
-                    $("#hidFileName").val(obj.path);
-                    $("#inputName").val(obj.title);
+                    $("#hidFileName").val(obj.iconPath);
+                    $("#inputName").val(obj.menuName);
+                    $("#hidIconFileID").val(obj.iconFileID);
+                    $("#inputUrl").val(obj.menuUrl);
                     $("#inputSortId").val(obj.sortID);
-                    $("#showImg").attr("src", obj.path);
+                    $("#showImg").attr("src", obj.iconPath);
                     $("#showImg").show();
                     $("#modal-2").modal('show');
                 },
                 GetList: function () {
                     var that = this;
-                    $.post('/console/slide/GetSlidesPager',
+                    $.post('/console/pc/GetMenusPager',
                         {
                             pageIndex: that.listParam.pageIndex,
                             pageSize: that.listParam.pageSize,
@@ -178,7 +192,6 @@
                                     }
                                 });
                             });
-
                         });
                 },
                 Delete: function (id) {
@@ -203,17 +216,15 @@
                 }
             },
             mounted: function () {
-
             }
         });
 
         $(function () {
-
             $("#btnSave").click(function () {
                 var filePath = $("#hidFileName").val();
                 var uploadFile = $("#fileInput").val();
-                if (filePath != undefined && filePath != null && filePath != "" && (uploadFile == undefined || uploadFile == null || uploadFile=="")) {
-                    SaveInfo();
+                if (filePath != undefined && filePath != null && filePath != "" && (uploadFile == undefined || uploadFile == null || uploadFile == "")) {
+                    SaveMenuInfo();
                 }
                 else {
                     $.ajax({
@@ -229,7 +240,7 @@
                             $("#hidFileName").val(data.data);
                             //$("#showImg").attr("src", data.data);
                             //$("#showImg").show();
-                            SaveInfo();
+                            SaveMenuInfo();
                             return true;
                         }
                         else {
@@ -241,24 +252,28 @@
             });
         });
         //保存幻灯片信息
-        function SaveInfo() {
-            $.post("/Console/Slide/SaveSlideAsync",
+        function SaveMenuInfo() {
+            var menuIcon = {};
+            menuIcon.SavePath = $("#hidFileName").val();
+            $.post("/Console/PC/SaveMenuAsync",
                 {
                     id: tbList.id,
                     createTime: tbList.createTime,
-                    title: $("#inputName").val(),
+                    menuName: $("#inputName").val(),
+                    menuUrl: $("#inputUrl").val(),
+                    parentID: $("#selectParent").val(),
                     sortID: $("#inputSortId").val(),
-                    savePath: $("#hidFileName").val()
+                    iconFileID: $("#hidIconFileID").val(),
+                    menuIcon: menuIcon
                 },
                 function (data) {
-
                     if (data.isSuccessed) {
                         $("#modal-2").modal('hide');
                         tbList.GetList();
                     }
                     layer.alert(data.msg);
                 });
-    }
+        }
 
         function show(title) {
             ClearModal();
@@ -273,6 +288,9 @@
             $("#inputName").val("");
             $("#inputSortId").val(0);
             $("#showImg").hide();
+            $("#inputUrl").val("");
+            $("#hidIconFileID").val("");
+            $("#selectParent").val(0);
         }
         function ViewImg(e) {
             layer.photos({ photos: "#" + $(e).parent().attr("id"), anim: 5 });

@@ -1,7 +1,5 @@
 ﻿using Dapper;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Data;
 using System.Threading.Tasks;
 using Tax.Model.DBModel;
 
@@ -12,13 +10,15 @@ namespace Tax.Repository
         public StaticFilesRepository(RepositoryOption option) : base(option)
         {
         }
-        public async Task<int> InsertFile(StaticFiles fileParam)
+        public async Task<int> InsertFileAsync(StaticFiles fileParam,IDbTransaction tran=null)
         {
             var sql = $@"insert into staticfiles (Title,SavePath,Extensions,ShowName,SortID,Type,Description,Version,CreateTime) 
-                                    values(@Title,@SavePath,@Extensions,@ShowName,@SortID,@Type,@Description,@Version,now());";
-            using (var conn = CreateMysqlConnection())
+                                    values(@Title,@SavePath,@Extensions,@ShowName,@SortID,@Type,@Description,@Version,now());
+                                    SELECT @@identity;";
+            var conn = (tran == null || tran.Connection != null) ? CreateMysqlConnection() : tran.Connection;
+            using (conn)
             {
-                return await conn.ExecuteAsync(sql, fileParam);
+                return await conn.QueryFirstOrDefaultAsync<int>(sql, fileParam, tran);
             }
         }
     }
