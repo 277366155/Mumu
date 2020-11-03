@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
 
@@ -8,27 +7,6 @@ namespace Tax.Common
 {
     public class BaseCore
     {
-        public static IServiceProvider ServiceProvider { get; set; }
-        public static IHttpContextAccessor CurrentAccessor { get; set; }
-
-        public static IHostingEnvironment CurrentEnvironment
-        {
-            get
-            {
-                object factory = ServiceProvider.GetService(typeof(IHostingEnvironment));
-                return (IHostingEnvironment)factory;
-            }
-        }
-
-        public static HttpContext CurrentContext
-        {
-            get
-            {
-                return CurrentAccessor.HttpContext;
-            }
-        }
-
-
         private static IConfigurationBuilder _builder;
         private static object lockObj = new object();
         public static IConfigurationBuilder InitConfigurationBuilder(Action<IConfigurationBuilder> act = null)
@@ -60,6 +38,17 @@ namespace Tax.Common
             get
             {
                 return InitConfigurationBuilder().Build();
+            }
+        }
+
+        /// <summary>
+        /// 读取根节点下的appsetting节点
+        /// </summary>
+        public static IConfigurationSection AppSetting
+        {
+            get
+            {
+                return Configuration.GetSection("AppSetting");
             }
         }
     }

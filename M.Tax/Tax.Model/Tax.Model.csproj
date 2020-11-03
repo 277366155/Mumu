@@ -5,13 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System.ComponentModel.Annotations">
-      <HintPath>C:\Program Files (x86)\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.2.0\ref\netcoreapp2.2\System.ComponentModel.Annotations.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\Tax.Common\Tax.Common.csproj" />
   </ItemGroup>
 
 </Project>

@@ -55,7 +55,7 @@ namespace Tax.Service
         private async Task<BaseResult> InsertIconAndMenuInfoAsync(SaveMenuParam param)
         {
             var icon = Mapper.Map<StaticFiles>(param.MenuIcon);
-            using (var conn = ClientMenusRepository.CreateMysqlConnection())
+            using (var conn =_clientMenusRep.CreateMysqlConnection())
             {
                 using (var tran = conn.BeginTransaction())
                 {
@@ -101,7 +101,7 @@ namespace Tax.Service
             {
                 _staticFilesSer.DeleteFile(iconInfo.SavePath);
             }
-            using (var conn = StaticFilesRepository.CreateMysqlConnection())
+            using (var conn =_staticFilesRep.CreateMysqlConnection())
             {
                 using (var tran = conn.BeginTransaction())
                 {

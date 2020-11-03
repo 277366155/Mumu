@@ -13,7 +13,7 @@ namespace Tax.AdminWeb.Areas.Console.Controllers
     {
         public IActionResult Index()
         {
-            var token= BaseCore.CurrentContext.GetCookie();
+            var token= HttpContext.GetCookie();
             if (!string.IsNullOrWhiteSpace(token))
             {
                 ViewBag.UserName = token.Split('|')[0];

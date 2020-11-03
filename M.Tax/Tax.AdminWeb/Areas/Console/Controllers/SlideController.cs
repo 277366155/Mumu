@@ -23,7 +23,7 @@ namespace Tax.AdminWeb.Areas.Console.Controllers
         [HttpPost]
         public async Task<IActionResult> UploadFileAsync()
         {
-              var data= await _staticFilesService.UploadFileAsync();
+              var data= await _staticFilesService.UploadFileAsync(HttpContext);
             return Json(data);
         }
 

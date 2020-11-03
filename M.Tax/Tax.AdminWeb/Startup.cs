@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Tax.AdminWeb.Filters;
 using Tax.Common;
 using Tax.Repository;
@@ -37,14 +38,14 @@ namespace Tax.AdminWeb
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
+            services.AddControllersWithViews();
 
             services.AddMvc(options =>
                {
                    options.Filters.Add<ExceptionProcessFilter>();
                    options.Filters.Add<RequestCheckFilter>();
-               })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+               }).SetCompatibilityVersion( CompatibilityVersion.Latest);
+
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton(new RepositoryOption(BaseCore.Configuration.GetConnectionString("TaxDB")));
             services.AddSingleton<UsersRepository>();
@@ -53,14 +54,11 @@ namespace Tax.AdminWeb
             services.AddSingleton<UsersService>();
             services.AddSingleton<StaticFilesService>();
             services.AddSingleton<ClientMenusService>();
-
-            BaseCore.ServiceProvider = services.BuildServiceProvider();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IHttpContextAccessor accessor)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            BaseCore.CurrentAccessor = accessor;
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -93,19 +91,15 @@ namespace Tax.AdminWeb
                 FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), BaseCore.Configuration["ImgPath:tempPath"])),
                 RequestPath = "/"+ BaseCore.Configuration["ImgPath:tempPath"]
             });
+            app.UseRouting();
             app.UseCookiePolicy();
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
-                   name: "areas",
-                   template: "{area:exists}/{controller}/{action=Index}"
-                 );
-                routes.MapRoute("default0", "default/{area=Console}/{controller=user}/{action=Index}");
-                routes.MapRoute("default", "{area=Console}/{controller=user}/{action=Index}");
-                routes.MapRoute("home", "home/{area=Console}/{controller=Menus}/{action=Index}");
+                endpoints.MapControllerRoute("areas","{area:exists}/{controller}/{action=Index}");
+                endpoints.MapControllerRoute("default0", "default/{area=Console}/{controller=user}/{action=Index}");
+                endpoints.MapControllerRoute("default", "{area=Console}/{controller=user}/{action=Index}");
+                endpoints.MapControllerRoute("home", "home/{area=Console}/{controller=Menus}/{action=Index}");
             });
         }
-
-
     }
 }

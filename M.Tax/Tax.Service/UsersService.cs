@@ -23,13 +23,13 @@ namespace Tax.Service
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public async Task<BaseResult> LoginCheck(LoginParam param)
+        public async Task<BaseResult> LoginCheck(LoginParam param,HttpContext context)
         {
             param.Password = DEncrypt.Encrypt(param.Password);
             var data = await _usersRep.FirstOrDefaultAsync(" and UserName=@UserName and Password=@Password", param);
             if (data !=null)
             {
-               BaseCore.CurrentContext.SetCookie(param.UserName);
+                context.SetCookie(param.UserName);
                 SetUserInfoSession(param.UserName, data);
                 return new Success("登陆成功");
             }
@@ -39,10 +39,10 @@ namespace Tax.Service
             }
         }
 
-        public BaseResult Logout()
+        public BaseResult Logout(HttpContext httpContext)
         {
-            var userName=BaseCore.CurrentContext.GetCookie();
-            BaseCore.CurrentContext.DeleteCookie();
+            var userName= httpContext.GetCookie();
+            httpContext.DeleteCookie();
             DeleteUserInfoSession(userName);
 
             return new Success();
