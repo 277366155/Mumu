@@ -1,6 +1,7 @@
 ﻿
 @{
-    Layout = null;
+    ViewData["Title"] = "首页";
+    Layout = "~/Shared/_root.cshtml";
 }
 
 <!DOCTYPE html>
@@ -11,6 +12,33 @@
     <title>Statistics</title>
 </head>
 <body>
-    asd fas d
+
+    <input id="userName" type="text" /><br/>
+    <textarea id="msgContent" ></textarea><br/>
+    <button id="sendBtn">发送</button>
+
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    <script type="text/javascript">
+        var conn = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+        conn.on("ReciveMsg", function (user, msg) {
+            layer.alert(user + "发送消息：" + msg);
+        });
+
+        conn.start().then(function () {
+            console.log("conn.start");
+        }).catch(function (error) {
+            console.error("[start error] :" + error);
+        });
+        $("#sendBtn").click(function () {
+            var userName = $("#userName").val();
+            var msg = $("#msgContent").val();
+            conn.invoke("sendMsg", userName, msg)
+                .catch(function (error) {
+                    console.error("[invoke error]:" + error);
+                });
+        });
+    </script>
 </body>
+
+
 </html>

@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Tax.AdminWeb.Filters;
+using Tax.AdminWeb.Hubs;
 using Tax.Common;
 using Tax.Repository;
 using Tax.Service;
@@ -54,6 +50,7 @@ namespace Tax.AdminWeb
             services.AddSingleton<UsersService>();
             services.AddSingleton<StaticFilesService>();
             services.AddSingleton<ClientMenusService>();
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -92,13 +89,15 @@ namespace Tax.AdminWeb
                 RequestPath = "/"+ BaseCore.Configuration["ImgPath:tempPath"]
             });
             //app.UseCookiePolicy();
-            app.UseRouting();            
+            app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute("areas","{area:exists}/{controller}/{action=Index}");
                 endpoints.MapControllerRoute("default0", "default/{area=Console}/{controller=user}/{action=Index}");
                 endpoints.MapControllerRoute("default", "{area=Console}/{controller=user}/{action=Index}");
                 endpoints.MapControllerRoute("home", "home/{area=Console}/{controller=Menus}/{action=Index}");
+                //引入signalr中心
+                endpoints.MapHub<ChatHub>("/chathub");
             });
         }
     }
