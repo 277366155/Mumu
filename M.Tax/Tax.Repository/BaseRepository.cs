@@ -125,37 +125,19 @@ namespace Tax.Repository
             {
                 var sql = $"insert into `{typeof(T).Name.ToLower()}` ";
                 var columns = new StringBuilder();
-                var values = new StringBuilder();
+                var paramStrBuild = new StringBuilder();
 
                 foreach (var p in typeof(T).GetProperties())
                 {
-                    if (p.Name == "ID")
+                    if (p.Name.ToLower() == "id")
                     {
                         continue;
                     }
                     columns.Append($"`{p.Name}`,");
-                    var pValue = p.GetValue(model);
-                    if (pValue == null)
-                    {
-                        values.Append($"  null ,");
-                    }
-                    else
-                    {
-                        switch (pValue.GetType().Name.ToLower())
-                        {
-                            case "string":
-                            case "datetime":
-                                values.Append($"'{pValue}',");
-                                break;
-                            default:
-                                values.Append($" {pValue} ,");
-                                break;
-                        }
-                    }                 
-                    
+                    paramStrBuild.Append($"@{p.Name},");
                 }
-                sql+=$"({columns.ToString().TrimEnd(',')}) value ({values.ToString().TrimEnd(',')});";
-                return await conn.ExecuteAsync(sql.ToString());
+                sql += $"({columns.ToString().TrimEnd(',')}) values ({paramStrBuild.ToString().TrimEnd(',')});";
+                return await conn.ExecuteAsync(sql.ToString(),model);
             }
         }
 
