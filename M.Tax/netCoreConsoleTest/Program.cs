@@ -10,5 +10,6 @@ namespace netCoreConsoleTest
             BaseCore.ConfigurationOnChange(() => Console.WriteLine("json config has changed."));
             Console.Read();
         }
+
     }
 }
