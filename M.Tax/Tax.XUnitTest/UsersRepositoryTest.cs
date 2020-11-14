@@ -1,10 +1,5 @@
 using Microsoft.Extensions.Configuration;
-<<<<<<< HEAD
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-=======
-using StackExchange.Redis;
->>>>>>> origin/dev
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

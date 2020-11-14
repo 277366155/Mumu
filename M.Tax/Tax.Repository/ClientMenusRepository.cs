@@ -10,7 +10,7 @@ namespace Tax.Repository
 {
     public class ClientMenusRepository : BaseRepository<ClientMenus>
     {
-        public ClientMenusRepository(IOptions<RepositoryOption> option) : base(option)
+        public ClientMenusRepository(IOptionsMonitor<RepositoryOption> option) : base(option)
         {
         }
 

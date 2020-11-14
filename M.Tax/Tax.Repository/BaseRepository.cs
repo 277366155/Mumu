@@ -7,21 +7,22 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tax.Common.Extention;
 using Tax.Model.DBModel;
 using Tax.Model.ViewModel;
 
 namespace Tax.Repository
 {
-    public class BaseRepository<T> where T:BaseDBModel
+    public class BaseRepository<T> where T : BaseDBModel
     {
-        static RepositoryOption _repOpt;
+        static IOptionsMonitor<RepositoryOption> _repOpt;
         static object lockObj = new object();
         IDbConnection conn;
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public  IDbConnection CreateMysqlConnection()
+        public IDbConnection CreateMysqlConnection()
         {
             if (conn == null)
             {
@@ -29,30 +30,34 @@ namespace Tax.Repository
                 {
                     if (conn == null)
                     {
-                        conn = new MySqlConnection(_repOpt.TaxDB);
+                        conn = new MySqlConnection(_repOpt.CurrentValue.TaxDB);
                     }
                 }
             }
-            if(conn.State!= ConnectionState.Open)
+            if (conn.State != ConnectionState.Open)
                 conn.Open();
             return conn;
         }
 
-        public BaseRepository(IOptions<RepositoryOption> option)
-        {            
-            _repOpt = option.Value;
+        public BaseRepository(IOptionsMonitor<RepositoryOption> option)
+        {
+            _repOpt = option;
+            _repOpt.OnChange(opt =>
+            {
+                Console.WriteLine("RepositoryOption was changed :" + opt.ToJson());
+            });
         }
 
         public virtual async Task<T> GetModelAsync(int id)
         {
-            using (var conn=CreateMysqlConnection())
+            using (var conn = CreateMysqlConnection())
             {
                 var sql = $"select * from `{typeof(T).Name.ToLower()}`  where ID=@id;";
                 return await conn.QueryFirstOrDefaultAsync<T>(sql, new { id });
             }
         }
 
-        public virtual async Task<IEnumerable<T>> GetListAsync(string filter,object param=null)
+        public virtual async Task<IEnumerable<T>> GetListAsync(string filter, object param = null)
         {
             using (var conn = CreateMysqlConnection())
             {
@@ -67,7 +72,7 @@ namespace Tax.Repository
             return list.FirstOrDefault();
         }
 
-        public virtual async Task<Pager<T>> GetPageListAsync(string filter,int pageIndex,int pageSize, object param = null,string sort="ID desc")
+        public virtual async Task<Pager<T>> GetPageListAsync(string filter, int pageIndex, int pageSize, object param = null, string sort = "ID desc")
         {
             var result = new Pager<T>();
             using (var conn = CreateMysqlConnection())
@@ -79,8 +84,8 @@ namespace Tax.Repository
 
                 var countSql = $@"select count(1) from `{typeof(T).Name.ToLower()}`  
                                     where 1=1 {filter} ;";
-                result.DataList=( await conn.QueryAsync<T>(sql, param))?.ToList();
-                result.Total= (await conn.QueryAsync<int>(countSql, param)).FirstOrDefault();
+                result.DataList = (await conn.QueryAsync<T>(sql, param))?.ToList();
+                result.Total = (await conn.QueryAsync<int>(countSql, param)).FirstOrDefault();
                 result.PageIndex = pageIndex;
                 result.PageSize = pageSize;
             }
@@ -111,12 +116,12 @@ namespace Tax.Repository
         /// <param name="filter"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual async Task<int>  CountAsync(string filter, object param = null)
+        public virtual async Task<int> CountAsync(string filter, object param = null)
         {
             using (var conn = CreateMysqlConnection())
             {
                 var sql = $@"select count(1) from  `{typeof(T).Name.ToLower()}`  where 1=1 {filter};";
-                return await conn.QueryFirstOrDefaultAsync<int>(sql,param);
+                return await conn.QueryFirstOrDefaultAsync<int>(sql, param);
             }
         }
 
@@ -138,7 +143,7 @@ namespace Tax.Repository
                     paramStrBuild.Append($"@{p.Name},");
                 }
                 sql += $"({columns.ToString().TrimEnd(',')}) values ({paramStrBuild.ToString().TrimEnd(',')});";
-                return await conn.ExecuteAsync(sql.ToString(),model);
+                return await conn.ExecuteAsync(sql.ToString(), model);
             }
         }
 

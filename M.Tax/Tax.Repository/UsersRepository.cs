@@ -8,7 +8,7 @@ namespace Tax.Repository
 {
     public class UsersRepository : BaseRepository<Users>
     {
-        public UsersRepository(IOptions<RepositoryOption> option) : base(option)
+        public UsersRepository(IOptionsMonitor<RepositoryOption> option) : base(option)
         {
         }
         /// <summary>

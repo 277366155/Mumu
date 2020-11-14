@@ -8,7 +8,7 @@ namespace Tax.Repository
 {
     public class StaticFilesRepository : BaseRepository<StaticFiles>
     {
-        public StaticFilesRepository(IOptions<RepositoryOption> option) : base(option)
+        public StaticFilesRepository(IOptionsMonitor<RepositoryOption> option) : base(option)
         {
         }
         public async Task<int> InsertFileAsync(StaticFiles fileParam,IDbTransaction tran=null)
