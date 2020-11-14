@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Options;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace Tax.Repository
 {
     public class ClientMenusRepository : BaseRepository<ClientMenus>
     {
-        public ClientMenusRepository(RepositoryOption option) : base(option)
+        public ClientMenusRepository(IOptions<RepositoryOption> option) : base(option)
         {
         }
 

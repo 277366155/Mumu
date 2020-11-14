@@ -1,4 +1,6 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using Tax.Common;
 using Tax.Common.Logs;
@@ -21,7 +23,11 @@ namespace Tax.XUnitTest
         [Fact]
         public void InsertTest()
         {
-            var userRep = new UsersRepository(new RepositoryOption(ConnStr));
+            var sc = new ServiceCollection();
+            sc.Configure<RepositoryOption>(BaseCore.Configuration.GetSection("ConnectionStrings"));
+            sc.AddTransient<UsersRepository>();
+            var sp = sc.BuildServiceProvider();
+            var userRep = sp.GetService<UsersRepository>();
             var result=  userRep.InsertAsync(new Users() {  UserName="boo", Password="123", CreateTime= DateTime.Now}).Result;
             OutPut.WriteLine($"data:{result}"); ;
             Assert.Equal(1, result);

@@ -43,7 +43,8 @@ namespace Tax.AdminWeb
                }).SetCompatibilityVersion( CompatibilityVersion.Latest);
 
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton(new RepositoryOption(BaseCore.Configuration.GetConnectionString("TaxDB")));
+            services.Configure<RepositoryOption>(BaseCore.Configuration.GetSection("ConnectionStrings"));
+            //AddSingleton(new RepositoryOption(BaseCore.Configuration.GetConnectionString("TaxDB")));
             services.AddSingleton<UsersRepository>();
             services.AddSingleton<StaticFilesRepository>();
             services.AddSingleton<ClientMenusRepository>();

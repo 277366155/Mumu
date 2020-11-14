@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 using Tax.Model.DBModel;
 using Tax.Model.ParamModel;
@@ -7,7 +8,7 @@ namespace Tax.Repository
 {
     public class UsersRepository : BaseRepository<Users>
     {
-        public UsersRepository(RepositoryOption option) : base(option)
+        public UsersRepository(IOptions<RepositoryOption> option) : base(option)
         {
         }
         /// <summary>

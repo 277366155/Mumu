@@ -52,7 +52,6 @@ namespace Tax.Common
             if (act == null)
                 act = () => { Trace.WriteLine("appsettings.json was changed"); };
 
-            var token = Configuration.GetReloadToken();
             ChangeToken.OnChange(()=>Configuration.GetReloadToken(), act);
         }
 

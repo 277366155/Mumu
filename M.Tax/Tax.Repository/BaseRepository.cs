@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace Tax.Repository
 {
     public class BaseRepository<T> where T:BaseDBModel
     {
-        static string _conStr;
+        static RepositoryOption _repOpt;
         static object lockObj = new object();
         IDbConnection conn;
         /// <summary>
@@ -28,7 +29,7 @@ namespace Tax.Repository
                 {
                     if (conn == null)
                     {
-                        conn = new MySqlConnection(_conStr);
+                        conn = new MySqlConnection(_repOpt.TaxDB);
                     }
                 }
             }
@@ -37,9 +38,9 @@ namespace Tax.Repository
             return conn;
         }
 
-        public BaseRepository(RepositoryOption option)
+        public BaseRepository(IOptions<RepositoryOption> option)
         {            
-            _conStr = option.ConnectionString;
+            _repOpt = option.Value;
         }
 
         public virtual async Task<T> GetModelAsync(int id)

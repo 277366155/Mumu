@@ -6,19 +6,20 @@ namespace Tax.Repository
 {
     public class RepositoryOption
     {
-        string _connStr;
-        public RepositoryOption(string connStr)
-        {
-            _connStr = connStr;
-        }
+        public string TaxDB { get; set; }
+        //string _connStr;
+        //public RepositoryOption(string connStr)
+        //{
+        //    _connStr = connStr;
+        //}
 
-        public string ConnectionString
-        {
-            get
-            {
-                return _connStr;
-            }
-        }
+        //public string ConnectionString
+        //{
+        //    get
+        //    {
+        //        return _connStr;
+        //    }
+        //}
 
     }
 }

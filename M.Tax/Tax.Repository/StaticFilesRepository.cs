@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Options;
 using System.Data;
 using System.Threading.Tasks;
 using Tax.Model.DBModel;
@@ -7,7 +8,7 @@ namespace Tax.Repository
 {
     public class StaticFilesRepository : BaseRepository<StaticFiles>
     {
-        public StaticFilesRepository(RepositoryOption option) : base(option)
+        public StaticFilesRepository(IOptions<RepositoryOption> option) : base(option)
         {
         }
         public async Task<int> InsertFileAsync(StaticFiles fileParam,IDbTransaction tran=null)
