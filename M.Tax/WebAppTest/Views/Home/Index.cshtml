@@ -1,0 +1,46 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{ 
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>test page</title>
+</head>
+<body>
+
+    <input id="userName" type="text" /><br />
+    <textarea id="msgContent"></textarea><br />
+    <button id="sendBtn">发送</button>
+
+
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    <script type="text/javascript">
+        var conn = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+        conn.on("recived", function (user, msg) {
+            alert(user + "发送消息：" + msg);
+        });
+
+        conn.start().then(function () {
+            console.log("conn.start");
+        }).catch(function (error) {
+            console.error("[start error] :" + error);
+        });
+        $("#sendBtn").click(function () {
+            var userName = $("#userName").val();
+            var msg = $("#msgContent").val();
+            conn.invoke("SendMsg", userName, msg)
+                .catch(function (error) {
+                    console.error("[invoke error]:" + error);
+                });
+        });
+    </script>
+</body>
+
+</html>
