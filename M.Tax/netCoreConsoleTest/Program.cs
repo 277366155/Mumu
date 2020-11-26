@@ -9,8 +9,7 @@ namespace netCoreConsoleTest
     {
         static void Main(string[] args)
         {
-            BinderTest();
-
+            new DBTractionTest().TranTest();
             Console.Read();
         }
 
