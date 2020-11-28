@@ -2,7 +2,7 @@
 using System.Text;
 using System.Xml.Serialization;
 
-namespace Tax.Common.Extention
+namespace Tax.Common
 {
     public static class StringExtention
     {

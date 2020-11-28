@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 
-namespace Tax.Common.Extention
+namespace Tax.Common
 {
     public static class HttpContextExtention
     {
