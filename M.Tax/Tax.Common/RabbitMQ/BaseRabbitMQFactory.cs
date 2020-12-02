@@ -32,11 +32,16 @@ namespace Tax.Common.RabbitMQ
             var retryArgs = new Dictionary<string, object>();
             retryArgs.Add("x-dead-letter-exchange", _options.ExchangeName);//设置死信转发器，队列中消息超时时，会被转发到业务转发器
             retryArgs.Add("x-message-ttl", 60000);//定义retry的消息最大的停留时间
-            Channel.ExchangeDeclare(_options.RetryExchangeName, _options.ExchangeType, _options.ExchangeDurable, _options.ExchangeAutoDelete, null);
-            Channel.QueueDeclare(_options.RetryQueueName, _options.QueueDurable, _options.QueueExclusive, _options.QueueAutoDelete, retryArgs);
-
-            Channel.ExchangeDeclare(_options.FailExchangeName, _options.ExchangeType, _options.ExchangeDurable, _options.ExchangeAutoDelete, null);
-            Channel.QueueDeclare(_options.FailQueueName, _options.QueueDurable, _options.QueueExclusive, _options.QueueAutoDelete, null);
+            if (!string.IsNullOrWhiteSpace(_options.RetryExchangeName) && !string.IsNullOrWhiteSpace(_options.RetryQueueName))
+            {
+                Channel.ExchangeDeclare(_options.RetryExchangeName, _options.ExchangeType, _options.ExchangeDurable, _options.ExchangeAutoDelete, null);
+                Channel.QueueDeclare(_options.RetryQueueName, _options.QueueDurable, _options.QueueExclusive, _options.QueueAutoDelete, retryArgs);
+            }
+            if (!string.IsNullOrWhiteSpace(_options.FailExchangeName) && !string.IsNullOrWhiteSpace(_options.FailQueueName))
+            {
+                Channel.ExchangeDeclare(_options.FailExchangeName, _options.ExchangeType, _options.ExchangeDurable, _options.ExchangeAutoDelete, null);
+                Channel.QueueDeclare(_options.FailQueueName, _options.QueueDurable, _options.QueueExclusive, _options.QueueAutoDelete, null);
+            }
 
             //Channel.ConfirmSelect();
             ////设置应答超时时间

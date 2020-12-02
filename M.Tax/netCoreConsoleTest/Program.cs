@@ -9,7 +9,8 @@ namespace netCoreConsoleTest
     {
         static void Main(string[] args)
         {
-            new DBTractionTest().TranTest();
+            //new DBTractionTest().TranTest();
+            RabbitMQTest.PublisherTest();
             Console.Read();
         }
 
