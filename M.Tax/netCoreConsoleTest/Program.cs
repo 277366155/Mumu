@@ -8,7 +8,7 @@ namespace netCoreConsoleTest
     {
         static void Main(string[] args)
         {
-
+            LogTest.LogBuild();
             Console.Read();
         }
 

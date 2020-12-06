@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Diagnostics;
-using Tax.Common.Extention;
 using Tax.Model;
+using Tax.Common;
 
 namespace Tax.AdminWeb.Filters
 {

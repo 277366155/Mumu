@@ -30,4 +30,3 @@ namespace netCoreConsoleTest
         public string savePath { get; private set; }
     }
 }
-}

@@ -3,7 +3,6 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Tax.Common;
-using Tax.Common.Extention;
 using Tax.Model;
 using Tax.Model.DBModel;
 using Tax.Model.Enum;

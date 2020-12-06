@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Net;
 using Tax.Common;
-using Tax.Common.Extention;
 
 namespace SissCloud.Caching.Redis
 {

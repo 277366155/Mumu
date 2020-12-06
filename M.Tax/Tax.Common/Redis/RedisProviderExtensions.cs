@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tax.Common;
-using Tax.Common.Extention;
 
 namespace SissCloud.Caching.Redis
 {

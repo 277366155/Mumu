@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Tax.Common.Extention;
 
 namespace Tax.Common.RabbitMQ
 {

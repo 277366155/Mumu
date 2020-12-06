@@ -24,8 +24,7 @@ namespace Tax.AdminWeb
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-           .UseConfiguration(BaseCore.Configuration)
-            //.UseUrls(BaseCore.Configuration["urls"])            
+           .UseConfiguration(BaseCore.Configuration)  
             .UseStartup<Startup>();
     }
 }

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using Tax.Common;
-using Tax.Common.Extention;
 using Tax.Model.DBModel;
 using Tax.Model.ParamModel;
 using Tax.Model.ViewModel;

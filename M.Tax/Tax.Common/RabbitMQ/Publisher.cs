@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Tax.Common.Extention;
 
 namespace Tax.Common.RabbitMQ
 {
