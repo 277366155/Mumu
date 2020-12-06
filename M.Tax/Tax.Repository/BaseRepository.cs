@@ -124,26 +124,38 @@ namespace Tax.Repository
             }
         }
 
-        public virtual async Task<int> InsertAsync(T model)
+        public virtual async Task<int> InsertAsync(T model, IDbTransaction tran = null)
         {
-            using (var conn = CreateMysqlConnection())
+            IDbConnection conn;
+            if (tran == null)
             {
-                var sql = $"insert into `{typeof(T).Name.ToLower()}` ";
-                var columns = new StringBuilder();
-                var paramStrBuild = new StringBuilder();
-
-                foreach (var p in typeof(T).GetProperties())
-                {
-                    if (p.Name.ToLower() == "id")
-                    {
-                        continue;
-                    }
-                    columns.Append($"`{p.Name}`,");
-                    paramStrBuild.Append($"@{p.Name},");
-                }
-                sql += $"({columns.ToString().TrimEnd(',')}) values ({paramStrBuild.ToString().TrimEnd(',')});";
-                return await conn.ExecuteAsync(sql.ToString(), model);
+                conn = CreateMysqlConnection();
             }
+            else
+            {
+                conn = tran.Connection;
+            }
+
+            var sql = $"insert into `{typeof(T).Name.ToLower()}` ";
+            var columns = new StringBuilder();
+            var paramStrBuild = new StringBuilder();
+
+            foreach (var p in typeof(T).GetProperties())
+            {
+                if (p.Name.ToLower() == "id")
+                {
+                    continue;
+                }
+                columns.Append($"`{p.Name}`,");
+                paramStrBuild.Append($"@{p.Name},");
+            }
+            sql += $"({columns.ToString().TrimEnd(',')}) values ({paramStrBuild.ToString().TrimEnd(',')});";
+            var result = await conn.ExecuteAsync(sql.ToString(), model, tran);
+            if (tran == null)
+            {
+                conn.Dispose();
+            }
+            return result;
         }
 
         public virtual async Task<int> DeleteAsync(int id)

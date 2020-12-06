@@ -9,6 +9,10 @@ namespace netCoreConsoleTest
         static void Main(string[] args)
         {
             LogTest.LogBuild();
+
+            //new DBTractionTest().TranTest();
+            //RabbitMQTest.PublisherTest();
+
             Console.Read();
         }
 
