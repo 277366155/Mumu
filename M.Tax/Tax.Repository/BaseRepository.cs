@@ -7,6 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tax.Common;
 using Tax.Model.DBModel;
 using Tax.Model.ViewModel;
 
