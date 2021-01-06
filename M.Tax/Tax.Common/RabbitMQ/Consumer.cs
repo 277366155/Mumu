@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMQ.Client.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,11 +21,68 @@ namespace Tax.Common.RabbitMQ
         private EventingBasicConsumer failConsumer;
         private string _consumerTag;
 
+        public string ConsumerName { get; private set; }
+
+        private static object LockConnObj = new object();
+
+        public override IConnection RabbitConnection
+        {
+            get
+            {
+                if (_connection == null)
+                {
+                    lock (LockConnObj)
+                    {
+                        if (_connFac == null)
+                        {
+                            _connFac = new ConnectionFactory()
+                            {
+                                RequestedHeartbeat = TimeSpan.FromSeconds(30),
+                                RequestedConnectionTimeout = TimeSpan.FromSeconds(300),
+                                AutomaticRecoveryEnabled = true,
+
+                                HostName = _options.HostName,
+                                UserName = _options.UserName,
+                                Password = _options.Password,
+                                VirtualHost = _options.VirtualHost,
+                                Port = _options.Port
+                            };
+                        }
+                        if (_connection == null)
+                        {
+                            _connection = _connFac.CreateConnection();
+                        }
+                    }
+                }
+                return _connection;
+            }
+        }
+
+        private static object LockChannelObj = new object();
+        public override IModel Channel
+        {
+            get
+            {
+                if (!_channelDic.ContainsKey(ChannelName))
+                {
+                    lock (LockChannelObj)
+                    {
+                        if (!_channelDic.ContainsKey(ChannelName))
+                        {
+                            _channelDic.Add(ChannelName, RabbitConnection.CreateModel());
+                        }
+                    }
+                }
+                return _channelDic[ChannelName];
+            }
+        }
+
         public Consumer(RabbitMqOptions options,string channelName) : base(options, channelName)
         {
             Channel.BasicQos(0, 1, false);
             consumer = new EventingBasicConsumer(Channel);
             failConsumer = new EventingBasicConsumer(Channel);
+            ConsumerName = options.ClientServiceName;
         }
 
         public void ConsumeStart<T>(Func<T, bool> func)
@@ -69,8 +127,12 @@ namespace Tax.Common.RabbitMQ
                         {
                             //消费失败，重放队列中（可能引起死循环）.todo:或者记录到特定表中
                             act();
-                            Console.WriteLine($"result= false引起的Nack, msg = {msg} , e.DeliveryTag ="+ e.DeliveryTag);
+                            Console.WriteLine($"result= false引起的Nack, msg = {msg} , e.DeliveryTag =" + e.DeliveryTag);
                         }
+                    }
+                    catch (AlreadyClosedException ex0)
+                    {
+                        Console.WriteLine("连接已关闭。。",ex0);
                     }
                     catch (Exception ex)
                     {
@@ -86,6 +148,7 @@ namespace Tax.Common.RabbitMQ
             //failConsumer.Received += (s, e) => {
             //    var msg = Encoding.UTF8.GetString(e.Body.ToArray());
             //    Console.WriteLine($"failConsumer = {msg} ");
+            //     todo:insertIntoDB
             //};
             //Channel.BasicConsume(_options.FailQueueName,false,failConsumer);
             //#endregion 失败消息消费者
@@ -145,59 +208,7 @@ namespace Tax.Common.RabbitMQ
             });
             
         }
-        private static object LockConnObj = new object();
-
-        public override IConnection RabbitConnection
-        {
-            get
-            {
-                if (_connection == null)
-                {
-                    lock (LockConnObj)
-                    {
-                        if (_connFac == null)
-                        {
-                            _connFac = new ConnectionFactory()
-                            {
-                                RequestedHeartbeat = TimeSpan.FromSeconds(30),
-                                RequestedConnectionTimeout = TimeSpan.FromSeconds(300),
-                                AutomaticRecoveryEnabled = true,
-
-                                HostName = _options.HostName,
-                                UserName = _options.UserName,
-                                Password = _options.Password,
-                                VirtualHost = _options.VirtualHost,
-                                Port = _options.Port
-                            };
-                        }
-                        if (_connection == null)
-                        {
-                            _connection = _connFac.CreateConnection();
-                        }
-                    }
-                }
-                return _connection;
-            }
-        }
-
-        private static object LockChannelObj = new object();
-        public override IModel Channel
-        {
-            get
-            {
-                if (!_channelDic.ContainsKey(ChannelName))
-                {
-                    lock (LockChannelObj)
-                    {
-                        if (!_channelDic.ContainsKey(ChannelName))
-                        {
-                            _channelDic.Add(ChannelName, RabbitConnection.CreateModel());
-                        }
-                    }
-                }
-                return _channelDic[ChannelName];
-            }
-        }
+       
 
         public new void Dispose()
         {
