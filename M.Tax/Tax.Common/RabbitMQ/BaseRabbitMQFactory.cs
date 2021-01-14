@@ -46,7 +46,7 @@ namespace Tax.Common.RabbitMQ
             //增加字典用以判断同一个队列，有多个消费者实例时，只删除队列一次
             if (dicQueueReDeclare.TryGetValue(_options.QueueName, out var noDelete) && noDelete)
             {
-                Channel.QueueDelete(_options.QueueName);
+                //Channel.QueueDelete(_options.QueueName,ifEmpty:true);
                 dicQueueReDeclare[_options.QueueName] = false;
             }
             Channel.QueueDeclare(_options.QueueName, _options.QueueDurable, _options.QueueExclusive, _options.QueueAutoDelete, queueArgs);

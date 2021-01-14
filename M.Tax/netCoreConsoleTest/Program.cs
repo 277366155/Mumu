@@ -8,9 +8,10 @@ namespace netCoreConsoleTest
     {
         static void Main(string[] args)
         {
-           // LogTest.LogBuild();
+            // LogTest.LogBuild();
 
             //new DBTractionTest().TranTest();
+            Console.WriteLine("开启消息推送。。");
             RabbitMQTest.PublisherTest();
 
             Console.Read();

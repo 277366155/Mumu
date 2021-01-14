@@ -23,7 +23,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "netCoreConsoleTest", "netCoreConsoleTest\netCoreConsoleTest.csproj", "{4BE5222F-2230-4BD1-B882-74D2E80ED695}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAppTest", "WebAppTest\WebAppTest.csproj", "{981935D1-A784-428B-B6B3-5130CB1DF206}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAppTest", "WebAppTest\WebAppTest.csproj", "{981935D1-A784-428B-B6B3-5130CB1DF206}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp.Fk.Test", "WebApp.Fk.Test\WebApp.Fk.Test.csproj", "{E949438D-04E2-4BA4-9993-1854B6118631}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +69,10 @@ Global
 		{981935D1-A784-428B-B6B3-5130CB1DF206}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{981935D1-A784-428B-B6B3-5130CB1DF206}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{981935D1-A784-428B-B6B3-5130CB1DF206}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E949438D-04E2-4BA4-9993-1854B6118631}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E949438D-04E2-4BA4-9993-1854B6118631}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E949438D-04E2-4BA4-9993-1854B6118631}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E949438D-04E2-4BA4-9993-1854B6118631}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -81,6 +87,7 @@ Global
 		{84543D0A-C3D6-4DFF-BDBA-950412D30D1C} = {FBB9E237-EC93-4BE2-91DA-D4604716E718}
 		{4BE5222F-2230-4BD1-B882-74D2E80ED695} = {FBB9E237-EC93-4BE2-91DA-D4604716E718}
 		{981935D1-A784-428B-B6B3-5130CB1DF206} = {FBB9E237-EC93-4BE2-91DA-D4604716E718}
+		{E949438D-04E2-4BA4-9993-1854B6118631} = {FBB9E237-EC93-4BE2-91DA-D4604716E718}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8496B2B-3DDF-4D02-BBB8-BB219160DF7A}
