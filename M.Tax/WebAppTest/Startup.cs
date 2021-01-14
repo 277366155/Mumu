@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WebAppTest.Hubs;
+using WebAppTest.Middlewares;
 
 namespace WebAppTest
 {
@@ -30,6 +31,29 @@ namespace WebAppTest
             }
             app.UseStaticFiles();
             app.UseRouting();
+            //use()是注入一个完整的中间件。可以指定next下一步做什么
+            //run()是执行action，已经是中间件末端，不再执行后面的中间件。
+            app.Use(async (context,next)=> {
+                await next.Invoke();
+                await context.Response.WriteAsync("This is response msg.");                
+            });
+
+            app.UseMyTestMiddleware();
+            //如果请求地址中带有test参数，就执行builder.run中的委托
+            app.MapWhen(context=> {
+                return context.Request.Query.ContainsKey("test");
+            }, builder=> {
+                builder.Run(async context=> {
+                    await context.Response.WriteAsync(" contains 'test' key. ");
+                });
+            });
+            app.MapWhen(context => {
+                return context.Request.Query.ContainsKey("boo");
+            }, builder => {
+                builder.Run(async context => {
+                    await context.Response.WriteAsync(" contains 'boo' key.");
+                });
+            });
 
             app.UseEndpoints(endpoints =>
             {

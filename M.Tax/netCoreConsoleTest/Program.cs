@@ -8,7 +8,7 @@ namespace netCoreConsoleTest
     {
         static void Main(string[] args)
         {
-            // LogTest.LogBuild();
+            LogTest.LogBuild(args);
 
             //new DBTractionTest().TranTest();
             Console.WriteLine("开启消息推送。。");
