@@ -8,10 +8,10 @@ namespace WebApp.Fk.Test.Controllers
 {
     public class HomeController : Controller
     {
-        static string Now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        static string Now = DateTime.Now.ToString("北京时间 [ yyyy-MM-dd HH:mm:ss ]");
         public ActionResult Index()
         {
-            ViewBag.Now = Now;
+            ViewBag.Now =  Now;
             return View();
         }
 
