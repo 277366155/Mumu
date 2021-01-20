@@ -17,14 +17,14 @@ namespace WebApp.Fk.Test.Controllers
 
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
+            ViewBag.Message = "介绍页面.";
 
             return View();
         }
 
         public ActionResult Contact()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = "联系方式页面.";
 
             return View();
         }
