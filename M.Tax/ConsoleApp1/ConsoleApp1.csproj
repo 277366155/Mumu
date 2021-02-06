@@ -73,7 +73,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="TestStartup.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
