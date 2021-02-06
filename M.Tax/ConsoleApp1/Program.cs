@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Owin.Hosting;
+using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Messaging;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Tax.Common;
 
 namespace ConsoleApp1
 {
@@ -16,7 +13,14 @@ namespace ConsoleApp1
        static  string type = ConfigurationManager.AppSettings["type"];
         static void Main(string[] args)
         {
+            var add = "http://127.0.0.1:444";
+            using (WebApp.Start<TestStartup>(url: add))
+            {
+                Console.WriteLine("web api started...");
+                Process.Start(add+"/test");
 
+                Console.ReadLine();
+            }
         }
 
 
