@@ -1,15 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WebAppTest.Hubs;
-using WebAppTest.Middlewares;
-using Microsoft.Extensions.Http;
+using Tax.Common;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System;
 
 namespace WebAppTest
 {
@@ -22,6 +21,26 @@ namespace WebAppTest
             services.AddHttpClient();
             services.AddMvc();
             services.AddSignalR();
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(BaseCore.AppSetting["SecurityKey"]));
+            services.AddSingleton(securityKey);
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)//cookie默认认证方案
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, opt => {
+                    //opt.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                })
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opt =>
+                {
+                    opt.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,//是否验证issuer前发者
+                        ValidateAudience = true,//是否验证audience客户端
+                        ValidateLifetime = true,//是否验证失效时间
+                        ClockSkew = TimeSpan.FromSeconds(30),//失效后的30s内仍可使用
+                        ValidAudience="boo",
+                        ValidIssuer="boo",
+                        IssuerSigningKey=securityKey//获取当前的私钥
+                    };
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -33,13 +52,19 @@ namespace WebAppTest
             }
             app.UseStaticFiles();
             app.UseRouting();
+            //注册顺序，且要在useEndpoints之前
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute("default", "home/{controller=Home}/{action=Index}");
+                endpoints.MapControllerRoute("default", "zhuye/{controller=Home}/{action=Index}");
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}");
 
                 endpoints.MapHub<ChatHub>("/chathub");
             });
+
+
 
             ////use()是注入一个完整的中间件。可以指定next下一步做什么
             ////run()是执行action，已经是中间件末端，不再执行后面的中间件。
