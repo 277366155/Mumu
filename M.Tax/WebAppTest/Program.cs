@@ -10,12 +10,12 @@ namespace WebAppTest
     {
         public static void Main(string[] args)
         {
-            Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(BaseCore.Configuration)
-                .MinimumLevel.Debug()
-                .Enrich.FromLogContext()
-                .WriteTo.Console(new RenderedCompactJsonFormatter())
-                .WriteTo.File(formatter: new CompactJsonFormatter(), "logs\\log.txt", rollingInterval: RollingInterval.Day)
-                .CreateLogger();
+            //Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(BaseCore.Configuration)
+            //    .MinimumLevel.Debug()
+            //    .Enrich.FromLogContext()
+            //    .WriteTo.Console(new RenderedCompactJsonFormatter())
+            //    .WriteTo.File(formatter: new CompactJsonFormatter(), "logs\\log.txt", rollingInterval: RollingInterval.Day)
+            //    .CreateLogger();
             CreateWebHostBuilder(args).Build().Run();
         }
 
