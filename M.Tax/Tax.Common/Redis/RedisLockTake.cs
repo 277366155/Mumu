@@ -20,14 +20,16 @@ namespace SissCloud.Caching.Redis
         /// <param name="key">锁键</param>
         /// <param name="token">锁值</param>
         /// <param name="expire">锁自动释放时间(s)</param>
-        public RedisLockTake(IDatabase db,string key,string token, double expire)
+        public RedisLockTake(IDatabase db,string key,string token, double expire,out bool lockResult)
         {
+            lockResult = false;
             if (db != null)
             {
                 _db = db;
                 _key = key;
                 _token = token;
                 LockResult = db.LockTake(key, this._token, TimeSpan.FromSeconds(expire));
+                lockResult = LockResult;
             }
         }
         public void Dispose()

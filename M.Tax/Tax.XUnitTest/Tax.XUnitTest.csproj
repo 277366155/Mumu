@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Tax.Common.Modules\Tax.Common.Modules.csproj" />
     <ProjectReference Include="..\Tax.Common\Tax.Common.csproj" />
     <ProjectReference Include="..\Tax.Repository\Tax.Repository.csproj" />
   </ItemGroup>
