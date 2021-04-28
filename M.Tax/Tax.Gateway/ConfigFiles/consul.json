@@ -1,0 +1,36 @@
+{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/consul/{url}",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "DownstreamPathTemplate": "/api/{url}",
+      "DownstreamScheme": "http",
+      //"DownstreamHostAndPorts": [
+      //  {
+      //    "Host": "127.0.0.1",
+      //    "Port": 8899
+      //  },
+      //  {
+      //    "Host": "127.0.0.1",
+      //    "Port": 19870
+      //  }
+      //],
+      "ServiceName": "WebAppTest",
+      "UseServiceDiscovery": true,
+      //负载均衡相关选项,注意此节点位置
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin" //"RoundRobin"
+      }
+    }
+  ],
+
+  "GlobalConfiguration": {
+    //监听的主机名
+    "BaseUrl": "http://127.0.0.1:5555",
+    "ServiceDiscoveryProvider": {
+      "Host": "127.0.0.1",
+      "Port": 8500,
+      "Type": "Consul"
+    }
+  }
+}

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Tax.Common.Modules
+namespace Tax.Common
 {
     public class CSRedisOperator
     {

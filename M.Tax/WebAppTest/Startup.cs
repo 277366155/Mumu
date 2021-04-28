@@ -9,11 +9,19 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System;
+using Microsoft.Extensions.Configuration;
 
 namespace WebAppTest
 {
     public class Startup
     {
+        public IConfiguration Configuration;
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -52,9 +60,9 @@ namespace WebAppTest
             }
             app.UseStaticFiles();
             app.UseRouting();
-            //注册顺序，且要在useEndpoints之前
-            app.UseAuthentication();
-            app.UseAuthorization();
+            ////注册顺序，且要在useEndpoints之前
+            //app.UseAuthentication();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
@@ -64,7 +72,7 @@ namespace WebAppTest
                 endpoints.MapHub<ChatHub>("/chathub");
             });
 
-
+            this.Configuration.ConsulRegist();
 
             ////use()是注入一个完整的中间件。可以指定next下一步做什么
             ////run()是执行action，已经是中间件末端，不再执行后面的中间件。

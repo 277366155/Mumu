@@ -1,0 +1,29 @@
+{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/api/{url}",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "DownstreamPathTemplate": "/api/{url}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "127.0.0.1",
+          "Port": 8899
+        },
+        {
+          "Host": "127.0.0.1",
+          "Port": 19870
+        }
+      ],
+      //负载均衡相关选项,注意此节点位置
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection" //"RoundRobin"
+      }
+    }
+  ],
+
+  "GlobalConfiguration": {
+    //监听的主机名
+    "BaseUrl": "https://277366155.cc"
+  }
+}
