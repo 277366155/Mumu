@@ -49,10 +49,11 @@ namespace WebAppTest
                         IssuerSigningKey=securityKey//获取当前的私钥
                     };
                 });
+            services.AddHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime  lifetime)
         {
             if (env.IsDevelopment())
             {
@@ -71,8 +72,9 @@ namespace WebAppTest
 
                 endpoints.MapHub<ChatHub>("/chathub");
             });
-
-            this.Configuration.ConsulRegist();
+            app.UseHealthChecks("/healthCheck");
+            //this.Configuration.ConsulRegist();
+            app.RegisterConsul(lifetime, Configuration.GetSection("Consul").Get<ServiceEntity>());
 
             ////use()是注入一个完整的中间件。可以指定next下一步做什么
             ////run()是执行action，已经是中间件末端，不再执行后面的中间件。

@@ -26,9 +26,10 @@ namespace Tax.Gateway
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddControllers();
+            services.AddHealthChecks();
             services.AddOcelot()
-                .AddConsul()
-                .AddPolly();
+                            .AddConsul()
+                            .AddPolly();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,15 +39,10 @@ namespace Tax.Gateway
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseOcelot().Wait();            
             //app.UseRouting();
-            //app.UseAuthorization();
+            app.UseHealthChecks("/healthCheck");
+            app.UseOcelot().Wait();
 
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapControllers();
-            //});
         }
     }
 }

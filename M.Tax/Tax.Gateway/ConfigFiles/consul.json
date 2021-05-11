@@ -5,21 +5,12 @@
       "UpstreamHttpMethod": [ "Get", "Post" ],
       "DownstreamPathTemplate": "/api/{url}",
       "DownstreamScheme": "http",
-      //"DownstreamHostAndPorts": [
-      //  {
-      //    "Host": "127.0.0.1",
-      //    "Port": 8899
-      //  },
-      //  {
-      //    "Host": "127.0.0.1",
-      //    "Port": 19870
-      //  }
-      //],
+      //多个负载节点使用同一个ServiceName，会作为集群来支撑请求
       "ServiceName": "WebAppTest",
       "UseServiceDiscovery": true,
       //负载均衡相关选项,注意此节点位置
       "LoadBalancerOptions": {
-        "Type": "RoundRobin" //"RoundRobin"
+        "Type": "RoundRobin"
       }
     }
   ],
@@ -28,7 +19,7 @@
     //监听的主机名
     "BaseUrl": "http://127.0.0.1:5555",
     "ServiceDiscoveryProvider": {
-      "Host": "127.0.0.1",
+      "Host": "128.0.23.63",
       "Port": 8500,
       "Type": "Consul"
     }

@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Tax.Common.Modules\Tax.Common.Modules.csproj" />
     <ProjectReference Include="..\Tax.Service\Tax.Service.csproj" />
   </ItemGroup>
 

@@ -35,7 +35,7 @@ namespace Tax.AdminWeb
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             services.AddControllersWithViews();
-
+            services.AddHealthChecks();
             services.AddMvc(options =>
                {
                    options.Filters.Add<ExceptionProcessFilter>();
@@ -55,7 +55,7 @@ namespace Tax.AdminWeb
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
         {
             if (env.IsDevelopment())
             {
@@ -65,7 +65,7 @@ namespace Tax.AdminWeb
             {
                 app.UseExceptionHandler("/Error");
             }
-
+            app.UseHealthChecks("/healthCheck");
             app.UseStaticFiles();
             var savePath = Directory.GetCurrentDirectory() +"/"+ BaseCore.Configuration["ImgPath:savePath"];
             if (!Directory.Exists(savePath))
@@ -100,6 +100,8 @@ namespace Tax.AdminWeb
                 //引入signalr中心
                 endpoints.MapHub<ChatHub>("/chathub");
             });
+
+            app.RegisterConsul(lifetime, Configuration.GetSection("Consul").Get<ServiceEntity>());
         }
     }
 }
