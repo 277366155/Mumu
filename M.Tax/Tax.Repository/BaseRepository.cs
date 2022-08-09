@@ -17,7 +17,7 @@ namespace Tax.Repository
         static object lockObj = new object();
         IDbConnection conn;
         /// <summary>
-        /// 
+        /// ！！20220809：这里不能使用单例模式，多并发情况下，数据会处理很慢！！
         /// </summary>
         /// <returns></returns>
         public  IDbConnection CreateMysqlConnection()
